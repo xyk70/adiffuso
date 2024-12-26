@@ -1,0 +1,33 @@
+[project]
+name = "pw14a"
+version = "0.1.0"
+description = "Prenotazioni Online AD"
+readme = "README.md"
+requires-python = ">=3.12"
+
+authors = [
+    {name = "fabio meoli", email = "fab.meo.fm@gmail.com"},
+]
+
+dependencies = [
+    "django>=4.2.17",
+    "django-environ>=0.11.2",
+    "django-tailwind>=3.6.0",
+    "pip>=24.3.1",
+]
+
+[tool.uv]
+package = true
+
+dev-dependencies = [
+    "pytest>=8.3.4",
+    "pytest-django>=4.9.0",
+    "coverage>=7.6.9",
+    "pytest-coverage>=0.0",
+    "django-webtest>=1.9.12",
+    "factory-boy>=3.3.1",
+    "django-browser-reload>=1.17.0",
+]
+
+[tool.django-stubs]
+DJANGO_SETTINGS_MODULE = "albdif.config.settings"

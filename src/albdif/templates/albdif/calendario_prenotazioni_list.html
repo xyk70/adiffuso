@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendario Prenotazioni</title>
+</head>
+<body>
+{% if calendario_prenotazioni_list %}
+    <ul>
+    {% for s in calendario_prenotazioni_list %}
+        <li><a href="{% url 'albdif:calendario_prenotazione_detail' s.id %}">{{ s }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Nessun calendario riferito alla prenotazione è stato trovato</p>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="titolopagina"> Le camere del nostro partner: {{ camere_list.0.proprieta }} </h2>
+
+{% if camere_list %}
+    <ul>
+    {% for c in camere_list %}
+        <li><a href="{% url 'albdif:camera_detail' c.id %}">{{ c }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Nessuna camera disponibile</p>
+{% endif %}
+
+{% endblock content %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block header %}
+<body class="camere"></body>
+{% endblock header %}
+
+
+{% block content %}
+<div>
+    <div>
+    <h2 class="titolopagina"> La vetrina del sito: le nostre camere </h2>
+    </div>
+    <div class="container">
+        {% if camere_list %}
+        {% for c in camere_list %}
+        <div class="row" style="display: flex; align-items: center; margin-bottom: 20px;">
+            {% if forloop.counter0|divisibleby:2 %}
+            <div class="column" style="flex: 1; text-align: left;">
+                <a href="{% url 'albdif:camera_detail' c.id %}">
+                <img src="{{ c.image.file.url }}" alt="{{ c.nome }}" style="width: 80%;">
+                </a>
+            </div>
+
+            <div style="border-left: 1px solid #ccc; height: 100%;"></div>
+
+            <div class="column" style="flex: 1;">
+                <h3>{{ c.nome }}</h3>
+                <p class="descrizione"> {{ c.descrizione }}</p>
+            </div>
+            {% else %}
+            <div class="column" style="flex: 1;">
+                <h3>{{ c.nome }}</h3>
+                <p class="descrizione">{{ c.descrizione }}</p>
+            </div>
+
+            <div style="border-left: 1px solid #ccc; height: 100%;"></div>
+
+            <div class="column" style="flex: 1; text-align: right;" >
+                <a href="{% url 'albdif:camera_detail' c.id %}">
+                <img src="{{ c.image.file.url }}" alt="{{ c.nome }}" style="width: 80%;">
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>Nessuna camera disponibile</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 class="titolopagina">Stai modificando la prenotazione della camera {{ camera }}</h3>
+<hr>
+<form action="{% url 'albdif:prenota_modifica' prenotazione_form.instance.pk %}" method="post">
+    {% csrf_token %}
+    {{ prenotazione_form }}
+    {{ calendario_form }}
+    <button type="submit">Modifica Prenotazione</button>
+</form>
+
+
+{% endblock content %}

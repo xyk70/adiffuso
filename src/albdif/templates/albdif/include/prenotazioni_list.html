@@ -1,0 +1,29 @@
+{% block content %}
+{% if prenotazioni_list %}
+    <ul>
+    {% for s in prenotazioni_list %}
+        <li>dal {{ s.data_inizio|date:"d M y" }} al {{ s.data_fine|date:"d M y" }}
+            presso {{ s.prenotazione.camera.proprieta }} -
+            <a href="{% url 'albdif:camera_detail' s.prenotazione.camera.id %}">Camera {{ s.prenotazione.camera.nome }}</a>
+            <a href="{% url 'albdif:prenota_modifica' s.prenotazione.pk %}" class="btn btn-primary">Modifica Prenotazione</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Nessuna prenotazione trovata</p>
+{% endif %}
+
+{% if storico_list %}
+    <hr>
+    <h3>Storico</h3>
+    <ul>
+    {% for s in storico_list %}
+        <li>dal {{ s.data_inizio|date:"d M y" }} al {{ s.data_fine|date:"d M y" }}
+            presso {{ s.prenotazione.camera.proprieta }} -
+            <a href="{% url 'albdif:camera_detail' s.prenotazione.camera.id %}">Camera {{ s.prenotazione.camera.nome }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock content %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="titolopagina"> Profilo dell'utente: {{ user.first_name }} {{ user.last_name }}</h2>
+
+<hr>
+
+{% if user.is_authenticated %}
+    <form action="/albdif/profilo/" method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <table class="visitatore">
+            {{ form }}
+        </table>
+        <input type="submit" class="button primary" name="save" value="Salva">
+    </form>
+    <hr>
+
+    <h3>Le tue prenotazioni</h3>
+
+    {% include 'albdif/include/prenotazioni_list.html' %}
+
+{% endif %}
+
+<hr>
+
+<form action="{% url 'albdif:logout' %}" method="POST" style="display:inline;">
+    {% csrf_token %}
+    <input type="submit" class="button secondary" value="Logout">
+</form>
+
+{% endblock content %}

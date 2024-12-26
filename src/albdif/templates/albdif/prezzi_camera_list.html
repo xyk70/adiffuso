@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prezzi della Camera: XXXXXX</title>
+</head>
+<body>
+{% if prezzi_camera_list %}
+    <ul>
+    {% for p in prezzi_camera_list %}
+        <li><a href="{% url 'albdif:prezzo_camera_detail' p.id %}">{{ p }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Nessun prezzo trovato per la camera</p>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,45 @@
+body {
+ /* @TODO cercare un'immagine free */
+ background-image: url("../img/background2.jpg");
+ background-color: rgba(77, 166, 11, 0.6);
+}
+
+h2, h3 {
+    font-family: "Arial", Times, serif;
+}
+
+.col-md-2, .col-md-4, .col-md-6 {
+    margin: 0px;
+    padding: 0px;
+}
+
+ /* @TODO non funziona ancora */
+.camere {
+     background-color: rgba(106, 124, 87, 0.6);
+}
+
+.descrizione {
+    font-size: 16px;
+    color: #333;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #462a2a;
+    background-color: rgba(243, 226, 164, 0.6);
+    text-align: justify;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9);
+}
+
+.titolopagina {
+    margin-top: 60px;
+}
+
+.calendario_disponibilita {
+    font-size: 16px;
+    color: #333;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #462a2a;
+    background-color: rgba(69, 200, 13, 0.6);
+    text-align: justify;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9);
+}

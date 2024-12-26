@@ -1,0 +1,34 @@
+{% block head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% endblock head %}
+
+{% block content %}
+<h5>Disponibilità</h5>
+<div id="datepicker" class="calendario_disponibilita"></div>
+    <input type="hidden" id="my_hidden_input">
+{% endblock content %}
+
+<script>
+    $(document).ready(function(){
+        var disabledDates = {{ disabled_dates|safe }};
+        $('#datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            startDate: '-0d',
+            autoclose: false,
+            todayHighlight: true,
+            datesDisabled: disabledDates,
+            multidate: true,
+        });
+
+<!--        .datepicker('setDate', new Date());-->
+<!--        $('#datepicker_next').datepicker({-->
+<!--            format: 'yyyy-mm-dd',-->
+<!--            startDate: '-1m',-->
+<!--            autoclose: false,-->
+<!--            todayHighlight: false,-->
+<!--            datesDisabled: disabledDates,-->
+<!--            multidate: true,-->
+<!--        }).datepicker('setDate', new Date(new Date().setMonth(new Date().getMonth() + 1)));-->
+    });
+</script>
+

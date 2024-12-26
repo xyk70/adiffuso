@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="titolopagina"> Accedi / Registrati </h2>
+
+<hr>
+
+{% if not user.is_authenticate %}
+    <form action="/albdif/login/" method="POST">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+    <p>Non hai un account? <a href="/register">Registrati qui</a></p>
+{% else %}
+    <h3>Utente: {{ user }} </h3>
+{% endif %}
+
+{% endblock content %}

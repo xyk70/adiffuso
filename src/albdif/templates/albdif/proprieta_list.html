@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Lista dei Partner{% endblock %}
+{% block content %}
+<h2 class="titolopagina"> I nostri partner ... </h2>
+
+<hr>
+
+{% if proprieta_list %}
+    <ul>
+    {% for p in prop_e_foto %}
+        <div style="display: flex;">
+            <div style="flex: 1;"></div>
+            <div style="flex: 5; text-align: center;">
+                {% for f in p.foto %}
+                <a href="{% url 'albdif:proprieta_detail' p.prop.pk %}">{{ p.prop }}
+                    <img src="{{ f.file.url }}" alt="Immagine di {{ p.prop }}" style="width: 100%; height: auto;">
+                </a>
+                {% endfor %}
+            </div>
+            <div style="flex: 1;"></div>
+            <div style="flex: 4; display: flex; align-items: center; justify-content: center;">
+                <p>{{ p.prop.descrizione }}</p>
+            </div>
+            <div style="flex: 1;"></div>
+        </div>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Nessuna proprietà disponibile</p>
+{% endif %}
+
+{% endblock content %}

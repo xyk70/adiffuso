@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if stagioni_list %}
+    <ul>
+    {% for s in stagioni_list %}
+        <li><a href="{% url 'albdif:stagione_detail' s.pk %}">{{ s }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Nessuna stagione disponibile</p>
+{% endif %}
+
+{% endblock content %}
