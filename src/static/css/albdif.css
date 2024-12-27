@@ -1,7 +1,7 @@
 body {
  /* @TODO cercare un'immagine free */
  background-image: url("../img/background2.jpg");
- background-color: rgba(77, 166, 11, 0.6);
+ background-color: rgba(156, 229, 99, 0.6);
 }
 
 h2, h3 {
@@ -13,9 +13,8 @@ h2, h3 {
     padding: 0px;
 }
 
- /* @TODO non funziona ancora */
-.camere {
-     background-color: rgba(106, 124, 87, 0.6);
+.camere_partner {
+     background-color: rgba(226, 181, 92, 0.6);
 }
 
 .descrizione {

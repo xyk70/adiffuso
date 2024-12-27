@@ -88,6 +88,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-bootstrap-v5"
+version = "1.0.11"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cc/ed/e02ed4a607f839726745c189d50f5b02cec30fe1fc1863a1ff1e2a899616/django-bootstrap-v5-1.0.11.tar.gz", hash = "sha256:2d431308859ce3cab7729bb09c76039059cd5fbdd34484da82c4c7f8d49da3a2", size = 32396 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cc/c3/24f9f53fd3b42c2a3f5ea2b2cb3c31c20a4eb938869740b38480dd3ccbd4/django_bootstrap_v5-1.0.11-py3-none-any.whl", hash = "sha256:a207aa804938164c8450bbbef4faaba6d2093b3236000557a50f3bd44b53d268", size = 24218 },
+]
+
+[[package]]
 name = "django-browser-reload"
 version = "1.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -107,18 +120,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d6/0b/f2c024529ee4bbf8b95176eebeb86c6e695192a9ce0e91059cb83a33c1d3/django-environ-0.11.2.tar.gz", hash = "sha256:f32a87aa0899894c27d4e1776fa6b477e8164ed7f6b3e410a62a6d72caaf64be", size = 54326 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c4/f1/468b49cccba3b42dda571063a14c668bb0b53a1d5712426d18e36663bd53/django_environ-0.11.2-py2.py3-none-any.whl", hash = "sha256:0ff95ab4344bfeff693836aa978e6840abef2e2f1145adff7735892711590c05", size = 19141 },
-]
-
-[[package]]
-name = "django-tailwind"
-version = "3.8.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/3c/ee/1065c57c87213f566d76b398f8391cd544380ef9661f7fdacdfe4264633c/django_tailwind-3.8.0.tar.gz", hash = "sha256:31c2f4a7879d685c2de0feaf0b63f246200b37337bea4d7dbafb59bc3f10c008", size = 8969 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/cf/14/20c40882d9ee91f7a2a20d3c0175cf813340c02ae31c975ce567de2c7c67/django_tailwind-3.8.0-py3-none-any.whl", hash = "sha256:fa969c5b95d314b173fe2b2ed2cb2c03f2e2c94fdc2c01ff73a993fa159085da", size = 12936 },
 ]
 
 [[package]]
@@ -209,8 +210,8 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "django" },
+    { name = "django-bootstrap-v5" },
     { name = "django-environ" },
-    { name = "django-tailwind" },
     { name = "pip" },
 ]
 
@@ -228,8 +229,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "django", specifier = ">=4.2.17" },
+    { name = "django-bootstrap-v5", specifier = ">=1.0.11" },
     { name = "django-environ", specifier = ">=0.11.2" },
-    { name = "django-tailwind", specifier = ">=3.6.0" },
     { name = "pip", specifier = ">=24.3.1" },
 ]
 

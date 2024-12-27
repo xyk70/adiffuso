@@ -39,9 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap5',
     'albdif',
-    'tailwind',
-    'theme',
     'django_browser_reload',
 ]
 
@@ -141,10 +140,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     pass
 
 print("DATABASE_URL", env("DATABASE_URL"))
-
-# TAILWIND
-TAILWIND_APP_NAME = 'theme'
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
-NPM_BIN_PATH = 'npm.cmd'

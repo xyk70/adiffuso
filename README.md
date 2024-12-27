@@ -52,9 +52,4 @@ bash
 docker stop <container_id>
 docker run -d -p 8080:8080 hello-world-go
 docker exec -it <container_id> bash
-
----
-
-### TAILWIND
-
-python manage.py tailwind start
+ 
