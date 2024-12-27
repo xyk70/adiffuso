@@ -7,31 +7,21 @@
     </div>
     <div class="container">
         {% if camere_list %}
-        {% for c in camere_list %}
-        <div class="row mb-4 align-items-center">
-            {% if forloop.counter0|divisibleby:2 %}
-            <div class="col-md-6">
-                <a href="{% url 'albdif:camera_detail' c.id %}">
-                <img src="{{ c.image.file.url }}" alt="{{ c.nome }}" class="img-fluid">
-                </a>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for c in camere_list %}
+            <div class="col">
+                <div class="card">
+                    <a href="{% url 'albdif:camera_detail' c.id %}">
+                    <img src="{{ c.image.file.url }}" alt="{{ c.nome }}" class="card-img-top">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ c.nome }}</h5>
+                        <p class="card-text">{{ c.descrizione }}</p>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <h3>{{ c.nome }}</h3>
-                <p class="descrizione">{{ c.descrizione }}</p>
-            </div>
-            {% else %}
-            <div class="col-md-6 order-md-2">
-                <a href="{% url 'albdif:camera_detail' c.id %}">
-                <img src="{{ c.image.file.url }}" alt="{{ c.nome }}" class="img-fluid">
-                </a>
-            </div>
-            <div class="col-md-6 order-md-1">
-                <h3>{{ c.nome }}</h3>
-                <p class="descrizione">{{ c.descrizione }}</p>
-            </div>
-            {% endif %}
+            {% endfor %}
         </div>
-        {% endfor %}
         {% else %}
         <p>Nessuna camera disponibile</p>
         {% endif %}

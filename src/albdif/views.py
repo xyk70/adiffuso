@@ -210,22 +210,19 @@ class prenota_modifica(generic.DetailView):
         prenotazione = get_object_or_404(Prenotazione, id=self.kwargs["id1"])
         if prenotazione.visitatore.utente.id != request.user.id:
             messages.warning(request, 'Accesso ad altre pagine prenotazione non consentito!')
-            return redirect('albdif:home')
-            #raise PermissionDenied("Accesso ad altre pagine prenotazione non consentito")
+            return HttpResponseRedirect(reverse('albdif:camera_detail', kwargs={'pk': prenotazione.camera.id}))
 
         """ Non è possibile modificare una prenotazione già pagata"""
         p = get_object_or_404(Prenotazione, id=self.kwargs["id1"])
-        if p.stato_prenotazione != "PR":
+        if p.stato_prenotazione == "PG":
             messages.warning(request, 'Non è possibile modificare una prenotazione già pagata!')
-            return redirect('albdif:home')
-            #raise PermissionDenied("Non è possibile modificare una prenotazione già pagata")
+            return HttpResponseRedirect(reverse('albdif:camera_detail', kwargs={'pk': prenotazione.camera.id}))
 
         """ Non è possibile modificare una prenotazione passata"""
         cp = CalendarioPrenotazione.objects.filter(prenotazione__id=self.kwargs["id1"]).order_by("data_inizio").first()
         if cp.data_inizio < datetime.today().date():
             messages.warning(request, 'Non è possibile modificare una prenotazione passata!')
-            return redirect('albdif:home')
-            #raise PermissionDenied("Non è possibile modificare una prenotazione passata")
+            return HttpResponseRedirect(reverse('albdif:camera_detail', kwargs={'pk': prenotazione.camera.id}))
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -267,6 +264,46 @@ class prenota_modifica(generic.DetailView):
             'prenotazione_form': prenotazione_form,
             'calendario_form': calendario_form
         })
+
+
+class prenota_cancella(generic.DetailView):
+    """
+    Gestisce la cancellazione di una prenotazione
+    """
+    template_name = "albdif/camera_detail.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        """ La pagina della prenotazione può essere acceduta solo dal suo utente """
+        prenotazione = get_object_or_404(Prenotazione, id=self.kwargs["id1"])
+        if prenotazione.visitatore.utente.id != request.user.id:
+            messages.error(request, 'Accesso ad altre pagine prenotazione non consentito!')
+            return HttpResponseRedirect(reverse('albdif:camera_detail', kwargs={'pk': prenotazione.camera.id}))
+
+        """ Non è possibile cancellare una prenotazione già pagata"""
+        p = get_object_or_404(Prenotazione, id=self.kwargs["id1"])
+        if p.stato_prenotazione == "PG":
+            messages.warning(request, 'Non è possibile cancellare una prenotazione già pagata!')
+            return HttpResponseRedirect(reverse('albdif:camera_detail', kwargs={'pk': prenotazione.camera.id}))
+
+        """ Non è possibile cancellare una prenotazione passata"""
+        cp = CalendarioPrenotazione.objects.filter(prenotazione__id=self.kwargs["id1"]).order_by("data_inizio").first()
+        if cp.data_inizio < datetime.today().date():
+            messages.warning(request, 'Non è possibile cancellare una prenotazione passata!')
+            return HttpResponseRedirect(reverse('albdif:camera_detail', kwargs={'pk': prenotazione.camera.id}))
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self, *args, **kwargs):
+        p = get_object_or_404(Prenotazione, id=self.kwargs["id1"])
+        return p
+
+    def get(self, request, *args, **kwargs):
+        prenotazione = self.get_queryset()
+        prenotazione.stato_prenotazione = prenotazione.CANCELLATA
+        prenotazione.save()
+        messages.success(request, 'Prenotazione cancellata con successo')
+
+        return HttpResponseRedirect(reverse('albdif:camera_detail', kwargs={'pk': prenotazione.camera.id}))
 
 
 class camere_list(generic.ListView):

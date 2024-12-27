@@ -3,6 +3,7 @@ import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.forms.widgets import DateInput
 
 from .models import Prenotazione, CalendarioPrenotazione
 
@@ -22,6 +23,9 @@ class PrenotazioneForm(forms.ModelForm):
 
 
 class CalendarioPrenotazioneForm(forms.ModelForm):
+    data_inizio = forms.DateField(widget=DateInput(attrs={'type': 'date'}), localize=True)
+    data_fine = forms.DateField(widget=DateInput(attrs={'type': 'date'}), localize=True)
+
     class Meta:
         model = CalendarioPrenotazione
         #fields = '__all__'
@@ -45,6 +49,7 @@ class CalendarioPrenotazioneForm(forms.ModelForm):
             Q(prenotazione__camera=self.instance.prenotazione.camera),
             Q(data_fine__gte=di), Q(data_inizio__lte=df),
             ~Q(prenotazione__id=self.instance.prenotazione.id),
+            ~Q(prenotazione__stato_prenotazione="CA"),
             Q(prenotazione__visitatore=self.instance.prenotazione.visitatore)).count()
         if gia_prenotata > 0:
             raise ValidationError("Spiacenti: le date si sovrappongono ad un'altra tua prenotazione")

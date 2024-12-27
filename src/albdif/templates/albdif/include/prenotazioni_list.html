@@ -5,18 +5,26 @@
             <tr>
                 <th>Periodo</th>
                 <th>Proprietà</th>
-<!--                <th>Camera</th>-->
                 <th>Azioni</th>
+                <th>Stato</th>
             </tr>
         </thead>
         <tbody>
         {% for s in prenotazioni_list %}
+            {% if s.prenotazione.stato_prenotazione == "CA" and not storico_list %}
+            {% else %}
             <tr>
                 <td>dal {{ s.data_inizio|date:"d M y" }} al {{ s.data_fine|date:"d M y" }}</td>
                 <td>{{ s.prenotazione.camera.proprieta }}</td>
-<!--                <td><a href="{% url 'albdif:camera_detail' s.prenotazione.camera.id %}">{{ s.prenotazione.camera.nome }}</a></td>-->
-                <td><a href="{% url 'albdif:prenota_modifica' s.prenotazione.pk %}" class="btn btn-success">Modifica Prenotazione</a></td>
+                <td>
+                    {% if s.prenotazione.stato_prenotazione != "CA" %}
+                       <a href="{% url 'albdif:prenota_modifica' s.prenotazione.pk %}" class="btn btn-success">Modifica</a>
+                       <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ s.prenotazione.pk }}">Cancella</button>
+                    {% endif %}
+                </td>
+                <td>{{ s.prenotazione.get_stato_prenotazione_display }}</td>
             </tr>
+            {% endif %}
         {% endfor %}
         </tbody>
     </table>
@@ -24,14 +32,35 @@
     <p>Nessuna prenotazione trovata</p>
 {% endif %}
 
+<!-- Gestione della modale per la conferma della cancellazione -->
+{% for s in prenotazioni_list %}
+<div class="modal fade" id="confirmDeleteModal{{ s.prenotazione.pk }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ s.prenotazione.pk }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel{{ s.prenotazione.pk }}">Conferma Cancellazione</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Sei sicuro di voler cancellare questa prenotazione?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <a href="{% url 'albdif:prenota_cancella' s.prenotazione.pk %}" class="btn btn-danger">Cancella</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
 {% if storico_list %}
     <hr>
     <h3>Storico</h3>
     <ul>
     {% for s in storico_list %}
-        <li>dal {{ s.data_inizio|date:"d M y" }} al {{ s.data_fine|date:"d M y" }}
-            presso {{ s.prenotazione.camera.proprieta }} -
-            <a href="{% url 'albdif:camera_detail' s.prenotazione.camera.id %}">Camera {{ s.prenotazione.camera.nome }}</a>
+        <li>Hai soggiornato dal <b>{{ s.data_inizio|date:"d M y" }}</b> al <b> {{ s.data_fine|date:"d M y" }} </b>
+            presso l'albergo diffuso {{ s.prenotazione.camera.proprieta }} -
+            <a href="{% url 'albdif:camera_detail' s.prenotazione.camera.id %}"> {{ s.prenotazione.camera.nome }}</a>
         </li>
     {% endfor %}
     </ul>

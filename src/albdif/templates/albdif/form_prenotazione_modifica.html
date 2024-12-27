@@ -5,9 +5,13 @@
 <hr>
 <form action="{% url 'albdif:prenota_modifica' prenotazione_form.instance.pk %}" method="post">
     {% csrf_token %}
-    {{ prenotazione_form }}
-    {{ calendario_form }}
-    <button type="submit">Modifica Prenotazione</button>
+    <div class="container">
+    {{ calendario_form}}
+    </div>
+    <div class="container">
+    {{ prenotazione_form}}
+    </div>
+    <button class="btn btn-success" type="submit">Salva</button>
 </form>
 
 

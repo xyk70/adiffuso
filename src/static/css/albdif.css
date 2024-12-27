@@ -1,11 +1,11 @@
 body {
  /* @TODO cercare un'immagine free */
- background-image: url("../img/background2.jpg");
+/* background-image: url("../img/background2.jpg"); */
  background-color: rgba(156, 229, 99, 0.6);
 }
 
-h2, h3 {
-    font-family: "Arial", Times, serif;
+h1, h2, h3, h4, h5 {
+    font-family: Times, serif, "Arial";
 }
 
 .col-md-2, .col-md-4, .col-md-6 {
@@ -13,19 +13,40 @@ h2, h3 {
     padding: 0px;
 }
 
+.col-md-6 {
+    padding: 10px;
+}
+
+.messages {
+    margin: 50px;
+}
+
 .camere_partner {
      background-color: rgba(226, 181, 92, 0.6);
 }
 
-.descrizione {
+.descrizione_home {
     font-size: 16px;
     color: #333;
-    margin: 10px;
+    margin: 2px;
     padding: 10px;
     border: 1px solid #462a2a;
     background-color: rgba(243, 226, 164, 0.6);
     text-align: justify;
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9);
+}
+
+.descrizione {
+    font-size: 16px;
+    color: #333;
+    margin: 2px;
+    padding: 10px;
+    border: 1px solid #462a2a;
+    background-color: rgba(243, 226, 164, 0.6);
+    text-align: justify;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9);
+    max-height: calc(1.2em * 7); /* Calcolando 1.2em l'altezza della riga */
+    overflow-y: auto;
 }
 
 .titolopagina {
@@ -38,7 +59,7 @@ h2, h3 {
     margin: 10px;
     padding: 10px;
     border: 1px solid #462a2a;
-    background-color: rgba(69, 200, 13, 0.6);
+    background-color: rgba(189, 213, 240, 0.6);
     text-align: justify;
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9);
 }
