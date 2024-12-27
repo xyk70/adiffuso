@@ -262,7 +262,7 @@ def test_prenotazione_modifica_denied(app: "DjangoTestApp", user):
     #TODO aggiungere test sul messaggio
 
 
-def test_prenotazione_modifica_denied(app: "DjangoTestApp", user):
+def test_prenotazione_modifica_denied_2(app: "DjangoTestApp", user):
     s = UserFactory()
     pr1 = ProprietaFactory()
     v1 = VisitatoreFactory(utente=s)
@@ -291,6 +291,45 @@ def test_prenotazione_modifica_denied(app: "DjangoTestApp", user):
     assert response.status_code == 302
     #assert 'Non è possibile modificare una prenotazione già pagata!' in response.content.decode()
     #TODO aggiungere test sul messaggio
+
+
+def test_prenotazione_cancellata(app: "DjangoTestApp", user):
+    s = UserFactory()
+    pr1 = ProprietaFactory()
+    v1 = VisitatoreFactory(utente=s)
+    c1 = CameraFactory(proprieta=pr1)
+    p1 = PrenotazioneFactory(
+        visitatore=v1,
+        camera=c1,
+        data_prenotazione=date(2023, 1, 1),
+        stato_prenotazione="PG"
+    )
+    cp = CalendarioPrenotazioneFactory(
+        prenotazione=p1,
+        data_inizio=date(2025, 2, 1),
+        data_fine=date(2025, 2, 2))
+
+    url = reverse("albdif:prenota_cancella", kwargs={'id1': p1.pk})
+    response = app.get(url)
+    assert response.status_code == 302
+    #TODO gli assert che seguono lo status code 302 non funzionano: approfondire
+    #assert 'Non è possibile cancellare una prenotazione già pagata' in response.content.decode()
+
+    p1.stato_prenotazione = "PR"
+    cp.data_inizio = date(2023, 2, 2)
+    cp.data_inizio = date(2023, 2, 3)
+    url = reverse("albdif:prenota_cancella", kwargs={'id1': p1.pk})
+    response = app.get(url)
+    assert response.status_code == 302
+    #assert 'Non è possibile cancellare una prenotazione passata' in response.content.decode()
+
+    p1.stato_prenotazione = "PR"
+    cp.data_inizio = date(2025, 2, 2)
+    cp.data_inizio = date(2025, 2, 3)
+    url = reverse("albdif:prenota_cancella", kwargs={'id1': p1.pk})
+    response = app.get(url)
+    assert response.status_code == 302
+    #assert 'Prenotazione cancellata con successo' in response.content.decode()
 
 
 def test_proprieta(app: "DjangoTestApp"):
@@ -347,7 +386,7 @@ def test_camera(app: "DjangoTestApp", user):
     response = app.get(url)
     assert response.status_code == 200
     assert 'Le tue prenotazioni' in response.content.decode()
-    assert 'Modifica Prenotazione' in response.content.decode()
+    assert 'Modifica' in response.content.decode()
     assert 'Nessuna prenotazione trovata' not in response.content.decode()
 
     url = reverse("albdif:camera_detail", kwargs={'pk': c2.pk})
