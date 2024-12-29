@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block header %}
+    <div class="container m-auto">
+        {% if pagamento_form.non_field_errors %}
+            <div class="messages">
+                {% for message in pagamento_form.non_field_errors %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock header %}
+
+{% block content %}
+<h3 class="titolopagina">Stai prenotando la camera {{ camera }}</h3>
+<hr>
+
+<form id="pagamentoForm" action="{% url 'albdif:prenota_paga' pagamento_form.instance.pk %}" method="post">
+    {% csrf_token %}
+
+    {{ pagamento_form }}
+
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal">Conferma Pagamento</button>
+</form>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Transazione di pagamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Stai per essere reindirizzato al portale pagamenti
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('pagamentoForm').submit();">Procedi con il pagamento</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
