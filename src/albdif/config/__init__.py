@@ -20,4 +20,4 @@ class MioEnv(Env):
         super().__init__(**values)
         self.prefix = f"{prefix}_"
 
-env: MioEnv = MioEnv("PEGASO", **AMBIENTE)
+env: MioEnv = MioEnv("PEGASUS", **AMBIENTE)

@@ -21,6 +21,10 @@ h1, h2, h3, h4, h5 {
     margin: 50px;
 }
 
+.badge {
+    padding: 10px;
+}
+
 .camere_partner {
      background-color: rgba(226, 181, 92, 0.6);
 }

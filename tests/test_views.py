@@ -34,7 +34,7 @@ def test_home(app: "DjangoTestApp"):
     response = app.get(url)
     assert response.status_code == 200
     assert 'albdif/home.html' in [t.name for t in response.templates]
-    assert 'Homepage AD Pegaso' in response.content.decode()
+    assert 'Homepage AD Pegasus' in response.content.decode()
 
 
 def test_login_ko(app: "DjangoTestApp"):
@@ -200,8 +200,10 @@ def test_prenotazione_avvenuta(app: "DjangoTestApp", user):
     assert 'Stai prenotando la camera' in response.content.decode()
 
     response.form["richiesta"] = "bla bla"
+    response.form["numero_persone"] = 3
     response.form["data_inizio"] = date(2025,2,1)
     response.form["data_fine"] = date(2025,2,1)
+    response.form["costo_soggiorno"] = 100
     response = response.form.submit()
     assert response.status_code == 302
     p = Prenotazione.objects.get(visitatore__utente=user)
@@ -218,7 +220,8 @@ def test_prenotazione_modifica(app: "DjangoTestApp", user):
         visitatore=v1,
         camera=c1,
         data_prenotazione=date(2024, 12, 25),
-        stato_prenotazione="PR"
+        stato_prenotazione="PR",
+        costo_soggiorno=100,
     )
     CalendarioPrenotazioneFactory(
         prenotazione=p1,
@@ -363,6 +366,7 @@ def test_camera(app: "DjangoTestApp", user):
     p1 = PrenotazioneFactory(
         visitatore=v1,
         camera=c1,
+        numero_persone=2,
         data_prenotazione=date(2023, 12, 25),
         stato_prenotazione="PG"
     )
@@ -374,6 +378,7 @@ def test_camera(app: "DjangoTestApp", user):
     p2 = PrenotazioneFactory(
         visitatore=v1,
         camera=c1,
+        numero_persone=3,
         data_prenotazione=date(2024, 11, 25),
         stato_prenotazione="PR"
     )
@@ -395,6 +400,7 @@ def test_camera(app: "DjangoTestApp", user):
     assert 'Le tue prenotazioni' in response.content.decode()
     assert 'Nessuna prenotazione trovata' in response.content.decode()
 
+
 #TODO test da rivedere: non funziona il logout e non riesco a testare in modalità anonima
 def test_camera_anonymous(app: "DjangoTestApp"):
     pr1 = ProprietaFactory()
@@ -409,3 +415,67 @@ def test_camera_anonymous(app: "DjangoTestApp"):
     assert response.status_code == 200
     #assert not 'Le tue prenotazioni' in response.content.decode()
     #assert not 'Nessuna prenotazione trovata' in response.content.decode()
+
+
+def test_cancellazione_prenotazione(app: "DjangoTestApp", user):
+    pr1 = ProprietaFactory()
+    v1 = VisitatoreFactory(utente=user)
+    c1 = CameraFactory(proprieta=pr1)
+    p1 = PrenotazioneFactory(
+        visitatore=v1,
+        camera=c1,
+        numero_persone=2,
+        data_prenotazione=date(2023, 12, 25),
+        stato_prenotazione="PG"
+    )
+    CalendarioPrenotazioneFactory(
+        prenotazione=p1,
+        data_inizio=date(2025, 2, 1),
+        data_fine=date(2025, 2, 2))
+
+    p2 = PrenotazioneFactory(
+        visitatore=v1,
+        camera=c1,
+        numero_persone=3,
+        data_prenotazione=date(2024, 11, 25),
+        stato_prenotazione="PR"
+    )
+    CalendarioPrenotazioneFactory(
+        prenotazione=p2,
+        data_inizio=date(2025, 1, 6),
+        data_fine=date(2025, 1, 10))
+
+    url = reverse("albdif:prenota_cancella", kwargs={'id1': p2.pk})
+    response = app.get(url)
+    assert response.status_code == 302
+    assert Prenotazione.objects.get(pk=p2.pk).stato_prenotazione == 'CA'
+
+
+def test_pagamento_prenotazione(app: "DjangoTestApp", user):
+    pr1 = ProprietaFactory()
+    v1 = VisitatoreFactory(utente=user)
+    c1 = CameraFactory(proprieta=pr1)
+    p1 = PrenotazioneFactory(
+        visitatore=v1,
+        camera=c1,
+        numero_persone=2,
+        costo_soggiorno=40,
+        data_prenotazione=date(2023, 12, 25),
+        stato_prenotazione="PR"
+    )
+    CalendarioPrenotazioneFactory(
+        prenotazione=p1,
+        data_inizio=date(2025, 2, 1),
+        data_fine=date(2025, 2, 2))
+
+    url = reverse("albdif:prenota_paga", kwargs={'id1': p1.pk})
+    response = app.get(url)
+    assert response.status_code == 200
+    response = response.form.submit()
+    assert response.status_code == 302
+    assert Prenotazione.objects.get(pk=p1.pk).stato_prenotazione == 'PG'
+
+    url = reverse("albdif:prenota_cancella", kwargs={'id1': p1.pk})
+    response = app.get(url)
+    assert response.status_code == 302
+    assert Prenotazione.objects.get(pk=p1.pk).stato_prenotazione == 'PG'

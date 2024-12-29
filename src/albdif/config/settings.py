@@ -139,4 +139,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # except ImportError:
 #     pass
 
-print("DATABASE_URL", env("DATABASE_URL"))
+#print("DATABASE_URL", env("DATABASE_URL"))

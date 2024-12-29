@@ -1,9 +1,10 @@
 import datetime
+from gc import disable
 
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.forms.widgets import DateInput
+from django.forms.widgets import DateInput, HiddenInput
 
 from .models import Prenotazione, CalendarioPrenotazione
 
@@ -14,17 +15,19 @@ class LoginForm(forms.Form):
 
 
 class PrenotazioneForm(forms.ModelForm):
-    richiesta = forms.CharField(widget=forms.Textarea(attrs={"rows": 5, "cols": 50}))
+    richiesta = forms.CharField(widget=forms.Textarea(attrs={"rows": 3, "cols": 80}))
+    numero_persone = forms.IntegerField()
+    costo_soggiorno = forms.DecimalField(max_digits=7, decimal_places=2, localize=True, widget=HiddenInput())
 
     class Meta:
         model = Prenotazione
-        #fields = '__all__'
-        exclude = ['visitatore', 'camera', 'stato_prenotazione', 'data_prenotazione']
+        fields = ['richiesta', 'numero_persone', 'costo_soggiorno']
+        # exclude = ['visitatore', 'camera', 'stato_prenotazione', 'data_prenotazione', 'data_pagamento']
 
 
 class CalendarioPrenotazioneForm(forms.ModelForm):
-    data_inizio = forms.DateField(widget=DateInput(attrs={'type': 'date'}), localize=True)
-    data_fine = forms.DateField(widget=DateInput(attrs={'type': 'date'}), localize=True)
+    data_inizio = forms.DateField(widget=DateInput(attrs={'type': 'date', 'format-key': "yyyy-MM-dd"}))
+    data_fine = forms.DateField(widget=DateInput(attrs={'type': 'date'}))
 
     class Meta:
         model = CalendarioPrenotazione
@@ -35,6 +38,8 @@ class CalendarioPrenotazioneForm(forms.ModelForm):
         cleaned_data = super(CalendarioPrenotazioneForm, self).clean()
         di = cleaned_data.get("data_inizio")
         df = cleaned_data.get("data_fine")
+        if not (df and di):
+            raise ValidationError("Inserire le date per favore")
         if df < di:
             raise ValidationError("La data fine non può essere antecedente alla data inizio")
         if di <= datetime.datetime.now().date():
@@ -55,3 +60,15 @@ class CalendarioPrenotazioneForm(forms.ModelForm):
             raise ValidationError("Spiacenti: le date si sovrappongono ad un'altra tua prenotazione")
 
         return cleaned_data
+
+
+class PagamentoForm(forms.ModelForm):
+    costo_soggiorno = forms.DecimalField(max_digits=7, decimal_places=2, disabled=True)
+
+    class Meta:
+        model = Prenotazione
+        #fields = '__all__'
+        exclude = ['visitatore', 'camera', 'stato_prenotazione', 'data_prenotazione',
+                   'data_pagamento', 'richiesta', 'numero_persone']
+
+

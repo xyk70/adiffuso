@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import CharField
+from django.db.models import CharField, Q
 from django.core.exceptions import ValidationError
 
 
@@ -69,6 +69,7 @@ class Camera(models.Model):
     proprieta = models.ForeignKey(Proprieta, on_delete=models.CASCADE)
     nome = models.CharField(max_length=100, default="... inserire un nickname")
     descrizione = models.CharField(max_length=1000)
+    numero_posti_letto = models.IntegerField(null=True, blank=True, default=2)
     services = models.JSONField(default={
             "toilette": True,
             "wifi": True,
@@ -88,6 +89,17 @@ class Camera(models.Model):
     def image(self):
         "ritorna l'elenco delle foto della camera"
         return Foto.objects.filter(camera=self.pk).first()
+
+    @property
+    def prezzo_bassa_stagione(self):
+        "ritorna il prezzo minimo della stagione 'Bassa'"
+        stagione_bassa = Stagione.objects.filter(stagione="Bassa").first()
+        if stagione_bassa:
+            prezzo_camera = PrezzoCamera.objects.filter(camera=self, stagione=stagione_bassa).order_by('prezzo').first()
+            if prezzo_camera:
+                return prezzo_camera.prezzo
+            return stagione_bassa.prezzo_deafult
+        return None
 
 class Foto(models.Model):
     """
@@ -117,13 +129,13 @@ class Prenotazione(models.Model):
     """
 
     PRENOTATA = "PR"
-    CANCELLATA = "CA"
     PAGATA = "PG"
+    CANCELLATA = "CA"
 
     STATO_PRENOTAZIONE = [
         (PRENOTATA, "Prenotata"),
-        (CANCELLATA, "Cancellata"),
         (PAGATA, "Pagata"),
+        (CANCELLATA, "Cancellata"),
     ]
 
     visitatore = models.ForeignKey(Visitatore, on_delete=models.CASCADE)
@@ -131,6 +143,9 @@ class Prenotazione(models.Model):
     data_prenotazione = models.DateTimeField()
     stato_prenotazione = models.CharField(max_length=2, choices=STATO_PRENOTAZIONE, default=PRENOTATA)
     richiesta = models.CharField(max_length=1000, null=True, blank=True, help_text="richiesta aggiuntiva del cliente")
+    costo_soggiorno = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    data_pagamento = models.DateTimeField(null=True, blank=True)
+    numero_persone = models.IntegerField(null=True, blank=True, default=1)
 
     class Meta():
         verbose_name = "Prenotazione"
@@ -165,6 +180,7 @@ class Stagione(models.Model):
     stagione = models.CharField(max_length=50)
     data_inizio = models.DateField()
     data_fine = models.DateField()
+    prezzo_deafult = models.DecimalField(max_digits=7, decimal_places=2, default=50)
 
     class Meta():
         verbose_name = "Stagione"
@@ -172,6 +188,20 @@ class Stagione(models.Model):
 
     def __str__(self):
         return f"{self.stagione} {self.data_inizio} {self.data_fine}"
+
+    def clean(self):
+        if self.data_fine < self.data_inizio:
+            raise ValidationError("La data fine deve essere maggiore della data inizio")
+
+        s = 0 if not self.id else self.id
+        if Stagione.objects.filter(Q(data_inizio__lte=self.data_fine),
+                                   Q(data_fine__gte=self.data_inizio),
+                                   ~Q(id__exact=s)).exists():
+            raise ValidationError("Le date si sovrappongono ad un'altra stagione")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super(Stagione, self).save(*args, **kwargs)
 
 
 class PrezzoCamera(models.Model):

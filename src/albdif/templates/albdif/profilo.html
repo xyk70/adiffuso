@@ -3,8 +3,6 @@
 {% block content %}
 <h2 class="titolopagina"> Profilo dell'utente: {{ user.first_name }} {{ user.last_name }}</h2>
 
-<hr>
-
 {% if user.is_authenticated %}
     <form action="/albdif/profilo/" method="POST" class="d-inline">
         {% csrf_token %}

@@ -5,8 +5,9 @@
             <tr>
                 <th>Periodo</th>
                 <th>Proprietà</th>
-                <th>Azioni</th>
+                <th>Costo</th>
                 <th>Stato</th>
+                <th>Azioni</th>
             </tr>
         </thead>
         <tbody>
@@ -16,13 +17,19 @@
             <tr>
                 <td>dal {{ s.data_inizio|date:"d M y" }} al {{ s.data_fine|date:"d M y" }}</td>
                 <td>{{ s.prenotazione.camera.proprieta }}</td>
-                <td>
-                    {% if s.prenotazione.stato_prenotazione != "CA" %}
-                       <a href="{% url 'albdif:prenota_modifica' s.prenotazione.pk %}" class="btn btn-success">Modifica</a>
-                       <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ s.prenotazione.pk }}">Cancella</button>
-                    {% endif %}
-                </td>
+                <td>{{ s.prenotazione.costo_soggiorno }} €</td>
                 <td>{{ s.prenotazione.get_stato_prenotazione_display }}</td>
+                <td>
+                   {% if s.prenotazione.stato_prenotazione == "PR" %}
+                      <a href="{% url 'albdif:prenota_modifica' s.prenotazione.pk %}" class="btn btn-success">Modifica</a>
+                   {% endif %}
+                   {% if s.prenotazione.stato_prenotazione == "PR" %}
+                      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ s.prenotazione.pk }}">Cancella</button>
+                   {% endif %}
+                   {% if s.prenotazione.stato_prenotazione != "PG" and s.prenotazione.stato_prenotazione != "CA" %}
+                       <a href="{% url 'albdif:prenota_paga' s.prenotazione.pk %}" class="btn btn-warning">Pagamento</a>
+                   {% endif %}
+                </td>
             </tr>
             {% endif %}
         {% endfor %}
