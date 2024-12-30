@@ -11,6 +11,12 @@ AMBIENTE = {
     "MEDIA_URL": (str, "/media/"),
     "STATIC_ROOT": (str, "/tmp/static/"),
     "STATIC_URL": (str, "/static/"),
+    "SOCIAL_AUTH_REDIRECT_IS_HTTPS": (bool, True),
+    "GOOGLE_CLIENT_ID": (str, ""),
+    "GOOGLE_CLIENT_SECRET": (str, ""),
+    "SOCIAL_AUTH_GITHUB_KEY": (str, ""),
+    "SOCIAL_AUTH_GITHUB_SECRET": (str, ""),
+    "SOCIAL_AUTH_GITHUB_REDIRECT_URI": (str, "")
 }
 
 class MioEnv(Env):

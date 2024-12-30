@@ -25,6 +25,10 @@ h1, h2, h3, h4, h5 {
     padding: 10px;
 }
 
+.vetrina {
+    font-size: 16px;
+}
+
 .camere_partner {
      background-color: rgba(226, 181, 92, 0.6);
 }

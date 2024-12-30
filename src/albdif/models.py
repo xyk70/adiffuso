@@ -10,7 +10,7 @@ class Visitatore(models.Model):
     persona che effettua la registrazione al sito per effettuare la prenotazione
     """
     registrazione = models.DateTimeField("data registrazione")
-    utente = models.ForeignKey(User, on_delete=models.CASCADE)
+    utente = models.ForeignKey(User, unique=True, on_delete=models.CASCADE)
 
     class Meta():
         verbose_name = "Visitatore"
@@ -26,7 +26,7 @@ class Host(models.Model):
     persona o azienda che effettua la registrazione per accedere ai servizi hosting dell'AD
     """
     registrazione = models.DateTimeField("data registrazione")
-    utente = models.ForeignKey(User, on_delete=models.CASCADE)
+    utente = models.ForeignKey(User, unique=True, on_delete=models.CASCADE)
 
     class Meta():
         verbose_name = "Host"

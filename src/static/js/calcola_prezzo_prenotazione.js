@@ -28,6 +28,6 @@ function calcolaPrezzo() {
     });
 
     // Aggiorna il contenuto dell'elemento con id 'prezzoTotale' con il prezzo totale calcolato
-    document.getElementById('prezzoTotale').textContent = `Prezzo totale: €${totale.toFixed(2)}`;
+    document.getElementById('prezzoTotale').textContent = `Il totale da pagare per il tuo soggiorno è: €${totale.toFixed(2)}`;
     document.getElementById('id_costo_soggiorno').value = totale;
 }

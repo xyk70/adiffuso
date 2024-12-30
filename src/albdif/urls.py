@@ -10,6 +10,8 @@ urlpatterns = [
     path("logout/", views.logout.as_view(), name="logout"),
     # ex: /profilo/1/
     path("profilo/<int:pk>/", views.profilo.as_view(), name="profilo"),
+    # ex: /registrazione/
+    path("registrazione/", views.registrazione.as_view(), name="registrazione"),
 
     # ex: /partner/   -> le proprietà dei partener
     path("partner/", views.proprieta_partner.as_view(), name="proprieta_partner"),

@@ -20,3 +20,20 @@ def date_range(start_date, end_date):
         current_date += timedelta(days=1)
 
     return date_list
+
+def calcola_prezzo_totale(data_inizio, data_fine, catalogo_prezzi):
+    """
+    Calcola il prezzo totale del soggiorno in base alle date di inizio e fine e al catalogo prezzi.
+
+    :param data_inizio: Data di inizio in formato 'yyyy-mm-dd'
+    :param data_fine: Data di fine in formato 'yyyy-mm-dd'
+    :param catalogo_prezzi: Catalogo prezzi: json con chiavi 'data_inizio', 'data_fine' e 'prezzo_giornaliero'
+    :return prezzo_totale: Prezzo totale del soggiorno
+    """
+    prezzo_totale = 0
+
+    for p in catalogo_prezzi:
+        if data_inizio >= p.data_inizio and data_fine <= p.data_fine:
+            prezzo_totale += (data_fine - data_inizio).days * p.prezzo_deafult
+
+    return prezzo_totale

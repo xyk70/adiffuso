@@ -14,7 +14,7 @@ from django.views import generic
 from django.contrib.auth import logout as auth_logout
 
 from .forms import LoginForm, PrenotazioneForm, CalendarioPrenotazioneForm, PagamentoForm
-from .utils.utility import date_range
+from .utils.utility import date_range, calcola_prezzo_totale
 from .models import Camera, Proprieta, Prenotazione, PrezzoCamera, CalendarioPrenotazione, Foto, Visitatore, Stagione
 
 
@@ -58,7 +58,7 @@ class profilo(LoginRequiredMixin, generic.DetailView):
     """
     model = User
     template_name = "albdif/profilo.html"
-    login_url = "/albdif/login/"
+    login_url = "/login/"
 
     def dispatch(self, request, *args, **kwargs):
         """ La pagina del profilo può essere acceduta solo dal suo utente """
@@ -79,6 +79,15 @@ class profilo(LoginRequiredMixin, generic.DetailView):
         context['prenotazioni_list'] = prenotazioni
         context['storico_list'] = storico
         return context
+
+
+# REGISTRAZIONE
+class registrazione(generic.DetailView):
+    """
+    # pagina di registrazione
+    """
+    template_name = "albdif/registrazione.html"
+    login_url = "/registrazione/"
 
 
 # PROPRIETA'
@@ -253,13 +262,17 @@ class prenota_modifica(generic.DetailView):
         calendario = get_object_or_404(CalendarioPrenotazione, prenotazione__id=prenotazione.id)
         visitatore = get_object_or_404(Visitatore, id=prenotazione.visitatore.id)
         camera = get_object_or_404(Camera, id=prenotazione.camera.id)
+        stagioni = Stagione.objects.filter(data_fine__gt=datetime.now()).order_by("data_inizio")
+        tot = calcola_prezzo_totale(calendario.data_inizio, calendario.data_fine, stagioni)
+        if prenotazione.costo_soggiorno and prenotazione.costo_soggiorno != tot:
+            messages.info(request, 'Il prezzo è stato aggiornato')
+            prenotazione.costo_soggiorno = tot
         prenotazione_form = PrenotazioneForm(request.POST, instance=prenotazione)
         calendario_form = CalendarioPrenotazioneForm(request.POST, instance=calendario)
-        stagioni = Stagione.objects.filter(data_fine__gt=datetime.now()).order_by("data_inizio")
 
         if prenotazione_form.is_valid() and calendario_form.is_valid():
-            prenotazione = prenotazione_form.save()
-            calendario = calendario_form.save()
+            prenotazione_form.save()
+            calendario_form.save()
             messages.success(request, 'Prenotazione modificata con successo')
             #@TODO invio email all'utente
             return HttpResponseRedirect(reverse('albdif:profilo', kwargs={'pk': visitatore.utente.id}))
@@ -345,8 +358,9 @@ class prenota_paga(generic.DetailView):
         calendario = get_object_or_404(CalendarioPrenotazione, prenotazione__id=prenotazione.id)
         visitatore = get_object_or_404(Visitatore, id=prenotazione.visitatore.id)
         camera = get_object_or_404(Camera, id=prenotazione.camera.id)
-        prenotazione.costo_soggiorno = prenotazione.numero_persone * (
-                    calendario.data_fine - calendario.data_inizio).days
+        stagioni = Stagione.objects.filter(data_fine__gt=datetime.now()).order_by("data_inizio")
+        if prenotazione.costo_soggiorno is None:
+            prenotazione.costo_soggiorno = calcola_prezzo_totale(calendario.data_inizio, calendario.data_fine, stagioni)
         pagamento_form = PagamentoForm(instance=prenotazione)
 
         return render(request, self.template_name, {

@@ -12,11 +12,14 @@
         </thead>
         <tbody>
         {% for s in prenotazioni_list %}
-            {% if s.prenotazione.stato_prenotazione == "CA" and not storico_list %}
-            {% else %}
+            {% if not s.prenotazione.stato_prenotazione == "CA" %}
             <tr>
                 <td>dal {{ s.data_inizio|date:"d M y" }} al {{ s.data_fine|date:"d M y" }}</td>
-                <td>{{ s.prenotazione.camera.proprieta }}</td>
+                <td>{{ s.prenotazione.camera.proprieta }}
+                    {% if storico_list %}
+                        - {{ s.prenotazione.camera }}
+                    {% endif %}
+                </td>
                 <td>{{ s.prenotazione.costo_soggiorno }} €</td>
                 <td>{{ s.prenotazione.get_stato_prenotazione_display }}</td>
                 <td>
@@ -71,6 +74,21 @@
         </li>
     {% endfor %}
     </ul>
+{% endif %}
+
+{% if storico_list %}
+    <hr>
+    <h3>Prenotazioni cancellate</h3>
+
+    <ul>
+    {% for s in prenotazioni_list %}
+        {% if s.prenotazione.stato_prenotazione == "CA" %}
+        <li>
+            dal {{ s.data_inizio|date:"d M y" }} al {{ s.data_fine|date:"d M y" }}
+            presso {{ s.prenotazione.camera.proprieta }} - {{ s.prenotazione.camera }}
+        </li>
+        {% endif %}
+    {% endfor %}
 {% endif %}
 
 {% endblock content %}

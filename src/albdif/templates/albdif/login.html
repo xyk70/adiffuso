@@ -6,19 +6,39 @@
 <hr>
 
 {% if not user.is_authenticate %}
-    <form action="/albdif/login/" method="POST">
+    <form action="/login/" method="POST" class="needs-validation" novalidate>
         {% csrf_token %}
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <button type="submit">Login</button>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username:</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+            <div class="invalid-feedback">
+                Inserisci il tuo username
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+            <div class="invalid-feedback">
+                Inserisci la tua password
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
-    <p>Non hai un account? <a href="/register">Registrati qui</a></p>
 {% else %}
     <h3>Utente: {{ user }} </h3>
+{% endif %}
+<hr>
+
+{% if registrazione_classica %}
+    <p>Non hai un account? <a href="/registrazione">Registrati qui oppure usa uno dei canali social di seguito:</a></p>
+{% endif %}
+
+<p>Registrazione Github SSO</p>
+<a href="{% url 'social:begin' 'github' %}" class="btn btn-danger">Login con Github</a>
+
+{% if google_sso %}
+    <hr>
+    <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-danger">Login con Google</a>
 {% endif %}
 
 {% endblock content %}

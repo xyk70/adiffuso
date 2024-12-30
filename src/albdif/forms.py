@@ -4,7 +4,7 @@ from gc import disable
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.forms.widgets import DateInput, HiddenInput
+from django.forms.widgets import DateInput, HiddenInput, Input
 
 from .models import Prenotazione, CalendarioPrenotazione
 
@@ -26,13 +26,21 @@ class PrenotazioneForm(forms.ModelForm):
 
 
 class CalendarioPrenotazioneForm(forms.ModelForm):
-    data_inizio = forms.DateField(widget=DateInput(attrs={'type': 'date', 'format-key': "yyyy-MM-dd"}))
-    data_fine = forms.DateField(widget=DateInput(attrs={'type': 'date'}))
 
     class Meta:
         model = CalendarioPrenotazione
         #fields = '__all__'
         exclude = ['prenotazione']
+        widgets = {
+            'data_inizio': Input(attrs={
+                'class': 'data_calendario',
+                'type': 'date'
+            }),
+            'data_fine': Input(attrs={
+                'class': 'data_calendario',
+                'type': 'date'
+            }),
+        }
 
     def clean(self):
         cleaned_data = super(CalendarioPrenotazioneForm, self).clean()
