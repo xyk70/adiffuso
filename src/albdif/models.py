@@ -161,7 +161,7 @@ class CalendarioPrenotazione(models.Model):
     registra i periodi relativi ad una prenotazione
     """
     prenotazione = models.ForeignKey(Prenotazione, on_delete=models.CASCADE)
-    data_inizio = models.DateField()
+    data_inizio = models.DateField(help_text="Data inizio soggiorno")
     data_fine = models.DateField()
 
     class Meta():

@@ -15,7 +15,7 @@
 {% endblock header %}
 
 {% block content %}
-<h3 class="titolopagina">Stai prenotando la camera {{ camera }}</h3>
+<h3 class="titolopagina">Stai procedendo al pagamento della camera {{ camera }}</h3>
 <hr>
 
 <form id="pagamentoForm" action="{% url 'albdif:prenota_paga' pagamento_form.instance.pk %}" method="post">

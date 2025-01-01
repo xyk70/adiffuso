@@ -263,7 +263,12 @@ class prenota_modifica(generic.DetailView):
         visitatore = get_object_or_404(Visitatore, id=prenotazione.visitatore.id)
         camera = get_object_or_404(Camera, id=prenotazione.camera.id)
         stagioni = Stagione.objects.filter(data_fine__gt=datetime.now()).order_by("data_inizio")
-        tot = calcola_prezzo_totale(calendario.data_inizio, calendario.data_fine, stagioni)
+        st = []
+        for s in stagioni:
+            e = {'stagione': s.stagione, 'data_inizio': s.data_inizio, 'data_fine': s.data_fine,
+                 'prezzo_deafult': s.prezzo_deafult}
+            st.append(e)
+        tot = calcola_prezzo_totale(calendario.data_inizio, calendario.data_fine, st)
         if prenotazione.costo_soggiorno and prenotazione.costo_soggiorno != tot:
             messages.info(request, 'Il prezzo è stato aggiornato')
             prenotazione.costo_soggiorno = tot

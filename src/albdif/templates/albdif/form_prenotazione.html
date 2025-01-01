@@ -1,28 +1,10 @@
 {% extends "base.html" %}
+{% block head %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+{% endblock head %}
+
 {% block header %}
     {% load static %}
-    <div class="container m-auto">
-        {% if prenotazione_form.non_field_errors %}
-            <div class="messages">
-                {% for message in prenotazione_form.non_field_errors %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% if calendario_form.non_field_errors %}
-            <div class="messages">
-                {% for message in calendario_form.non_field_errors %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
 {% endblock header %}
 
 {% block content %}
@@ -36,6 +18,7 @@
             <div id="form_prenot" class="col">
                 {% include 'albdif/include/prenotazione.html' %}
             </div>
+
             <div id="catalogo_prezzi" class="col">
                 <h4> Riferimento prezzi </h4>
                 <div class="row align-items-center bg-secondary p-3 border">
@@ -64,8 +47,7 @@
                 {% endfor %}
             </div>
         </div>
-
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="calcolaPrezzo()">Conferma Prenotazione</button>
+        <button type="button" class="btn btn-success" onclick="validateAndCalculate()">Conferma Prenotazione</button>
     </div>
 </form>
 
@@ -80,10 +62,11 @@
             <div class="modal-body">
                 Sei sicuro di voler procedere alla prenotazione?
                 <div id="prezzoTotale"></div>
+                <div id="errorMessage" class="text-danger"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                <button type="button" class="btn btn-primary" onclick="document.getElementById('prenotazioneForm').submit();">Conferma</button>
+                <button type="button" class="btn btn-primary" id="confirmButton" onclick="document.getElementById('prenotazioneForm').submit();">Conferma</button>
             </div>
         </div>
     </div>
@@ -93,5 +76,6 @@
 
 {% block footer %}
     <script type="text/javascript" src="{% static 'js/evidenzia_calendario.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/valida_prenotazione.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/calcola_prezzo_prenotazione.js' %}"></script>
 {% endblock footer %}

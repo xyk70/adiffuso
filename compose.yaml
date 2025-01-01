@@ -2,20 +2,28 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
     ports:
-      - "8080:8000"
+      - "8000:8000"
     volumes:
       # path esterno: path sul container
-      - ./src/db.sqlite3:/src/db.sqlite3     # Volume per il database
-      - ./media:/src/media                   # Volume per i media files
+      - ./docker/volumes/database/db.sqlite3:/app/db.sqlite3         # Volume per il database
+      - ./docker/volumes/media:/app/media                            # Volume per i media files
     environment:
-      - PEGASO_MEDIA_URL=/media/
-      - PEGASO_MEDIA_ROOT=/src/media/
       - DJANGO_SETTINGS_MODULE=albdif.config.settings
+      - PEGASUS_MEDIA_ROOT=${PEGASUS_MEDIA_ROOT}
+      - PEGASUS_MEDIA_URL=${PEGASUS_MEDIA_URL}
+      - PEGASUS_DATABASE_URL=${PEGASUS_DATABASE_URL}
+      - PEGASUS_SOCIAL_AUTH_REDIRECT_IS_HTTPS=${PEGASUS_SOCIAL_AUTH_REDIRECT_IS_HTTPS}
+      - PEGASUS_SOCIAL_AUTH_GITHUB_KEY=${PEGASUS_SOCIAL_AUTH_GITHUB_KEY}
+      - PEGASUS_SOCIAL_AUTH_GITHUB_SECRET=${PEGASUS_SOCIAL_AUTH_GITHUB_SECRET}
+      - PEGASUS_SOCIAL_AUTH_GITHUB_REDIRECT_URI=${PEGASUS_SOCIAL_AUTH_GITHUB_REDIRECT_URI}
     command: >
-      sh -c "python manage.py migrate &&
+       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
-volumes:
-  dbdata:
-    driver: local
+
+#volumes:
+#  dbdata:
+#    driver: local
+#  mediadata:
+#    driver: local

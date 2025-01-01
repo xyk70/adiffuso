@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from typing import TYPE_CHECKING
 
 from django.urls import reverse
@@ -129,10 +129,10 @@ def test_prenotazione_passata(app: "DjangoTestApp", user):
     assert 'La data inizio deve essere futura' in response.content.decode()
 
     response.form["richiesta"] = "bla bla"
-    response.form["data_inizio"] = date(2026,1,1)
+    response.form["data_inizio"] = date.today() + timedelta(days=10)
     response.form["data_fine"] = date(2024,1,2)
     response = response.form.submit()
-    assert 'La data fine non può essere antecedente alla data inizio' in response.content.decode()
+    assert 'La data fine non può essere antecedente o uguale alla data inizio' in response.content.decode()
 
 def test_prenotazione_negata(app: "DjangoTestApp", user):
     u1 = UserFactory()
@@ -147,8 +147,8 @@ def test_prenotazione_negata(app: "DjangoTestApp", user):
     )
     CalendarioPrenotazioneFactory(
         prenotazione=p1,
-        data_inizio=date(2025, 2, 1),
-        data_fine=date(2025, 2, 2))
+        data_inizio=date.today() + timedelta(days=10),
+        data_fine=date.today() + timedelta(days=12))
 
     v = VisitatoreFactory(utente=user)
     url = reverse("albdif:prenota_camera", kwargs={'id1': v.pk, 'id2': c1.pk})
@@ -157,8 +157,8 @@ def test_prenotazione_negata(app: "DjangoTestApp", user):
     assert 'Stai prenotando la camera' in response.content.decode()
 
     response.form["richiesta"] = "bla bla"
-    response.form["data_inizio"] = date(2025,2,1)
-    response.form["data_fine"] = date(2025,2,1)
+    response.form["data_inizio"] = date.today() + timedelta(days=10)
+    response.form["data_fine"] = date.today() + timedelta(days=11)
     response = response.form.submit()
     assert "Spiacenti: la camera è stata già prenotata" in response.content.decode()
 
@@ -174,8 +174,8 @@ def test_prenotazione_sovrapposta(app: "DjangoTestApp", user):
     )
     CalendarioPrenotazioneFactory(
         prenotazione=p1,
-        data_inizio=date(2025, 2, 1),
-        data_fine=date(2025, 2, 2))
+        data_inizio=date.today() + timedelta(days=10),
+        data_fine=date.today() + timedelta(days=15))
 
     url = reverse("albdif:prenota_camera", kwargs={'id1': v1.pk, 'id2': c1.pk})
     response = app.get(url)
@@ -183,8 +183,8 @@ def test_prenotazione_sovrapposta(app: "DjangoTestApp", user):
     assert 'Stai prenotando la camera' in response.content.decode()
 
     response.form["richiesta"] = "bla bla"
-    response.form["data_inizio"] = date(2025,2,1)
-    response.form["data_fine"] = date(2025,2,1)
+    response.form["data_inizio"] = date.today() + timedelta(days=12)
+    response.form["data_fine"] = date.today() + timedelta(days=13)
     response = response.form.submit()
     assert "Spiacenti: le date si sovrappongono ad un" in response.content.decode()
 
@@ -201,8 +201,8 @@ def test_prenotazione_avvenuta(app: "DjangoTestApp", user):
 
     response.form["richiesta"] = "bla bla"
     response.form["numero_persone"] = 3
-    response.form["data_inizio"] = date(2025,2,1)
-    response.form["data_fine"] = date(2025,2,1)
+    response.form["data_inizio"] = date.today() + timedelta(days=10)
+    response.form["data_fine"] = date.today() + timedelta(days=14)
     response.form["costo_soggiorno"] = 100
     response = response.form.submit()
     assert response.status_code == 302
@@ -219,14 +219,14 @@ def test_prenotazione_modifica(app: "DjangoTestApp", user):
     p1 = PrenotazioneFactory(
         visitatore=v1,
         camera=c1,
-        data_prenotazione=date(2024, 12, 25),
+        data_prenotazione=date.today(),
         stato_prenotazione="PR",
         costo_soggiorno=100,
     )
     CalendarioPrenotazioneFactory(
         prenotazione=p1,
-        data_inizio=date(2025, 2, 1),
-        data_fine=date(2025, 2, 2))
+        data_inizio=date.today() + timedelta(days=30),
+        data_fine=date.today() + timedelta(days=32))
 
     url = reverse("albdif:prenota_modifica", kwargs={'id1': p1.pk})
     response = app.get(url)
@@ -234,8 +234,8 @@ def test_prenotazione_modifica(app: "DjangoTestApp", user):
     assert 'Stai modificando la prenotazione della camera' in response.content.decode()
 
     response.form["richiesta"] = "avevo dimenticato di chiedere ..."
-    response.form["data_inizio"] = date(2025,2,1)
-    response.form["data_fine"] = date(2025,2,1)
+    response.form["data_inizio"] = date.today() + timedelta(days=30)
+    response.form["data_fine"] = date.today() + timedelta(days=33)
     response = response.form.submit()
     assert response.status_code == 302
     p = Prenotazione.objects.get(visitatore__utente=user)
@@ -255,8 +255,8 @@ def test_prenotazione_modifica_denied(app: "DjangoTestApp", user):
     )
     CalendarioPrenotazioneFactory(
         prenotazione=p1,
-        data_inizio=date(2025, 2, 1),
-        data_fine=date(2025, 2, 2))
+        data_inizio=date.today() + timedelta(days=10),
+        data_fine=date.today() + timedelta(days=13))
 
     url = reverse("albdif:prenota_modifica", kwargs={'id1': p1.pk})
     response = app.get(url)
@@ -287,8 +287,8 @@ def test_prenotazione_modifica_denied_2(app: "DjangoTestApp", user):
     #assert 'Non è possibile modificare una prenotazione passata!' in response.content.decode()
 
     p1.stato_prenotazione = "PG"
-    cp.data_inizio = date(2025, 2, 2)
-    cp.data_inizio = date(2025, 2, 3)
+    cp.data_inizio = date.today() + timedelta(days=10)
+    cp.data_inizio = date.today() + timedelta(days=12)
     url = reverse("albdif:prenota_modifica", kwargs={'id1': p1.pk})
     response = app.get(url)
     assert response.status_code == 302
@@ -309,8 +309,8 @@ def test_prenotazione_cancellata(app: "DjangoTestApp", user):
     )
     cp = CalendarioPrenotazioneFactory(
         prenotazione=p1,
-        data_inizio=date(2025, 2, 1),
-        data_fine=date(2025, 2, 2))
+        data_inizio=date.today() + timedelta(days=10),
+        data_fine=date.today() + timedelta(days=13))
 
     url = reverse("albdif:prenota_cancella", kwargs={'id1': p1.pk})
     response = app.get(url)
@@ -327,8 +327,8 @@ def test_prenotazione_cancellata(app: "DjangoTestApp", user):
     #assert 'Non è possibile cancellare una prenotazione passata' in response.content.decode()
 
     p1.stato_prenotazione = "PR"
-    cp.data_inizio = date(2025, 2, 2)
-    cp.data_inizio = date(2025, 2, 3)
+    cp.data_inizio = date.today() + timedelta(days=10)
+    cp.data_inizio = date.today() + timedelta(days=13)
     url = reverse("albdif:prenota_cancella", kwargs={'id1': p1.pk})
     response = app.get(url)
     assert response.status_code == 302
@@ -430,8 +430,8 @@ def test_cancellazione_prenotazione(app: "DjangoTestApp", user):
     )
     CalendarioPrenotazioneFactory(
         prenotazione=p1,
-        data_inizio=date(2025, 2, 1),
-        data_fine=date(2025, 2, 2))
+        data_inizio=date.today() + timedelta(days=20),
+        data_fine=date.today() + timedelta(days=22))
 
     p2 = PrenotazioneFactory(
         visitatore=v1,
@@ -442,8 +442,8 @@ def test_cancellazione_prenotazione(app: "DjangoTestApp", user):
     )
     CalendarioPrenotazioneFactory(
         prenotazione=p2,
-        data_inizio=date(2025, 1, 6),
-        data_fine=date(2025, 1, 10))
+        data_inizio=date.today() + timedelta(days=30),
+        data_fine=date.today() + timedelta(days=33))
 
     url = reverse("albdif:prenota_cancella", kwargs={'id1': p2.pk})
     response = app.get(url)
@@ -465,8 +465,8 @@ def test_pagamento_prenotazione(app: "DjangoTestApp", user):
     )
     CalendarioPrenotazioneFactory(
         prenotazione=p1,
-        data_inizio=date(2025, 2, 1),
-        data_fine=date(2025, 2, 2))
+        data_inizio=date.today() + timedelta(days=60),
+        data_fine=date.today() + timedelta(days=65))
 
     url = reverse("albdif:prenota_paga", kwargs={'id1': p1.pk})
     response = app.get(url)

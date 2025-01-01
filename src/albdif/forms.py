@@ -48,8 +48,8 @@ class CalendarioPrenotazioneForm(forms.ModelForm):
         df = cleaned_data.get("data_fine")
         if not (df and di):
             raise ValidationError("Inserire le date per favore")
-        if df < di:
-            raise ValidationError("La data fine non può essere antecedente alla data inizio")
+        if df <= di:
+            raise ValidationError("La data fine non può essere antecedente o uguale alla data inizio")
         if di <= datetime.datetime.now().date():
             raise ValidationError("La data inizio deve essere futura")
         gia_prenotata = CalendarioPrenotazione.objects.filter(
