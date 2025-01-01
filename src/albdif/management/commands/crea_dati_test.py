@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from albdif.models import Proprieta, Camera, Prenotazione
 
 from albdif.utils.fixtures import ProprietaFactory, CameraFactory, PrenotazioneFactory, \
-    CalendarioPrenotazioneFactory, StagioneFactory, FotoFactory, ProprietaPrincFactory
+    CalendarioPrenotazioneFactory, StagioneFactory, FotoFactory, ProprietaPrincFactory, UserFactory, VisitatoreFactory
 
 
 class Command(BaseCommand):
@@ -50,5 +50,9 @@ class Command(BaseCommand):
         # Creazione calendario prenotazioni
         for p in Prenotazione.objects.all():
             CalendarioPrenotazioneFactory.create(prenotazione=p)
+
+        # Creazione dell'utente guest
+        g = UserFactory.create(username="guest")
+        VisitatoreFactory.create(utente=g)
 
         self.stdout.write(self.style.SUCCESS('Dati di test creati con successo'))

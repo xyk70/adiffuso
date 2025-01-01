@@ -131,7 +131,7 @@ class FotoFactory(DjangoModelFactory):
     def _get_random_file():
         """Ritorna un'immagine da una lista di immagini non coperte da copyright e presenti su static/img
         """
-        directory = 'src/static/img'
+        directory = 'static/img'
         try:
             valid_files = [
                 f for f in os.listdir(directory)
