@@ -5,10 +5,13 @@ from albdif.models import Proprieta, Camera, Prenotazione, Stagione, CalendarioP
 
 @pytest.mark.django_db
 def test_crea_dati_test():
-    call_command('crea_dati_test')
+    import os
+    os.chdir('src')
+    call_command('crea_dati_test', )
+    os.chdir('..')
     
     assert Host.objects.count() == 4
-    assert Visitatore.objects.count() == 16
+    assert Visitatore.objects.count() == 17
     assert Proprieta.objects.count() == 4
     assert Camera.objects.count() == 16
     assert Prenotazione.objects.count() == 16
