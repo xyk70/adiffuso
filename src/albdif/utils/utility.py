@@ -34,6 +34,6 @@ def calcola_prezzo_totale(data_inizio, data_fine, catalogo_prezzi):
 
     for p in catalogo_prezzi:
         if data_inizio >= p['data_inizio'] and data_fine <= p['data_fine']:
-            prezzo_totale += (data_fine - data_inizio).days * p['prezzo_deafult']
+            prezzo_totale += (data_fine - data_inizio).days * p['prezzo_default']
 
     return prezzo_totale

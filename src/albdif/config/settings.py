@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'bootstrap5',
     "social_django",
     'albdif',
-    'django_browser_reload',
+    *env("DEV_APPS"),
 ]
 
 MIDDLEWARE = [
@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_browser_reload.middleware.BrowserReloadMiddleware',
+    *env("DEV_MIDDLEWARES"),
 ]
 
 ROOT_URLCONF = 'albdif.config.urls'

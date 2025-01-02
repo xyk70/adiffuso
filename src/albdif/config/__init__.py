@@ -16,7 +16,9 @@ AMBIENTE = {
     "GOOGLE_CLIENT_SECRET": (str, ""),
     "SOCIAL_AUTH_GITHUB_KEY": (str, ""),
     "SOCIAL_AUTH_GITHUB_SECRET": (str, ""),
-    "SOCIAL_AUTH_GITHUB_REDIRECT_URI": (str, "")
+    "SOCIAL_AUTH_GITHUB_REDIRECT_URI": (str, ""),
+    "DEV_APPS": (list, []),
+    "DEV_MIDDLEWARES": (list, []),
 }
 
 class MioEnv(Env):

@@ -11,7 +11,7 @@
 <div class="mb-3">
     <label for="id_numero_persone" class="form-label" style="display:block;">N° Persone</label>
     {{ prenotazione_form.numero_persone }}
-    <div id="numPersoneHelp" class="form-text">Indicare il numero di ospiti</div>
+    <div id="numPersoneHelp" class="form-text">Indicare il numero di ospiti (da 1 a {{ camera.numero_posti_letto }} - max posti letto)</div>
 </div>
 <div class="mb-3">
     <label for="id_richiesta" class="form-label" style="display:block;">Richieste aggiuntive</label>
@@ -36,3 +36,11 @@
         {% endfor %}
     {% endfor %}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var numeroPersoneInput = document.getElementById('id_numero_persone');
+        numeroPersoneInput.setAttribute('min', 1);
+        numeroPersoneInput.setAttribute('max', {{ camera.numero_posti_letto }});
+    });
+</script>

@@ -16,7 +16,7 @@ def test_calcola_prezzo_totale():
     catalogo_prezzi = [
         {'data_inizio': date(2023, 1, 1),
          'data_fine': date(2023, 1, 31),
-         'prezzo_deafult': 100.00}
+         'prezzo_default': 100.00}
     ]
 
     prezzo_totale = calcola_prezzo_totale(data_inizio, data_fine, catalogo_prezzi)

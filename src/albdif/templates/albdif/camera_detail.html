@@ -40,15 +40,15 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          {% for key in camera.services.keys %}
-          <th>{{ key }}</th>
+          {% for key in servizi %}
+          <th>{{ key.servizio.descrizione_servizio }}</th>
           {% endfor %}
         </tr>
       </thead>
       <tbody>
         <tr>
-          {% for value in camera.services.values %}
-          <td>{% if value %} &#10003; {% endif %}</td>
+          {% for s in servizi %}
+          <td>&#10003; {% if not s.incluso %} ({{s.costo}} €/gg) {% endif %}</td>
           {% endfor %}
         </tr>
       </tbody>

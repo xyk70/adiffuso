@@ -15,7 +15,8 @@ from django.contrib.auth import logout as auth_logout
 
 from .forms import LoginForm, PrenotazioneForm, CalendarioPrenotazioneForm, PagamentoForm
 from .utils.utility import date_range, calcola_prezzo_totale
-from .models import Camera, Proprieta, Prenotazione, PrezzoCamera, CalendarioPrenotazione, Foto, Visitatore, Stagione
+from .models import Camera, Proprieta, Prenotazione, PrezzoCamera, CalendarioPrenotazione, Foto, Visitatore, Stagione, \
+    ServizioCamera
 
 
 def home(request: HttpRequest) -> HttpResponse:
@@ -156,6 +157,7 @@ class camera_detail(generic.DetailView):
                                                                  data_inizio__gte=datetime.now())
         context['disabled_dates'] = json.dumps(gia_prenotate)
         context['foto'] = foto
+        context['servizi'] = ServizioCamera.objects.filter(camera=self.object)
         context['prenotazioni_list'] = prenotazioni
         return context
 
@@ -266,7 +268,7 @@ class prenota_modifica(generic.DetailView):
         st = []
         for s in stagioni:
             e = {'stagione': s.stagione, 'data_inizio': s.data_inizio, 'data_fine': s.data_fine,
-                 'prezzo_deafult': s.prezzo_deafult}
+                 'prezzo_default': s.prezzo_default}
             st.append(e)
         tot = calcola_prezzo_totale(calendario.data_inizio, calendario.data_fine, st)
         if prenotazione.costo_soggiorno and prenotazione.costo_soggiorno != tot:

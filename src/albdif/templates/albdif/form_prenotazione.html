@@ -38,10 +38,10 @@
                       {{ s.data_inizio }}
                     </div>
                     <div class="col">
-                      {{ s.data_fine }}
+                      {% if s.data_fine|date:"Y" == "9999" %} in poi {% else %} {{ s.data_fine }} {% endif %}
                     </div>
                     <div class="col">
-                      {{ s.prezzo_deafult }}
+                      {{ s.prezzo_default }}
                     </div>
                 </div>
                 {% endfor %}

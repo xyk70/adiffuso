@@ -1,7 +1,6 @@
-import datetime
 import random
 import os
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 from django.conf import settings
@@ -11,7 +10,8 @@ from django.core.files.base import ContentFile
 import factory.fuzzy
 from factory.django import DjangoModelFactory
 
-from albdif.models import Visitatore, Host, Proprieta, Camera, Prenotazione, CalendarioPrenotazione, Foto, Stagione
+from albdif.models import Visitatore, Host, Proprieta, Camera, Prenotazione, CalendarioPrenotazione, Foto, Stagione, \
+    Servizio, ServizioCamera
 
 
 class UserFactory(DjangoModelFactory):
@@ -53,8 +53,8 @@ class HostFactory(DjangoModelFactory):
 class StagioneFactory(DjangoModelFactory):
     stagione = factory.fuzzy.FuzzyChoice(choices=['Bassa', 'Media', 'Alta'])
     data_inizio = factory.fuzzy.FuzzyDate(date(2025, 1, 1), date(2025, 12, 31))
-    data_fine = factory.LazyAttribute(lambda obj: obj.data_inizio + datetime.timedelta(days=2))
-    prezzo_deafult = factory.fuzzy.FuzzyDecimal(50.00, 500.00)
+    data_fine = factory.LazyAttribute(lambda obj: obj.data_inizio + timedelta(days=2))
+    prezzo_default = factory.fuzzy.FuzzyDecimal(50.00, 500.00)
 
     class Meta:
         model = Stagione
@@ -86,25 +86,48 @@ suffix = ("Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
           "mollit anim id est laborum.")
 
 
+class ServizioFactory(DjangoModelFactory):
+
+    descrizione_servizio = factory.fuzzy.FuzzyChoice(choices=['toilette', 'wifi', 'phon', 'minibar', 'aria condizionata'])
+
+    class Meta:
+        model = Servizio
+
+
 class CameraFactory(DjangoModelFactory):
     proprieta = factory.SubFactory(ProprietaFactory)
     nome = factory.Faker('name')
     descrizione = factory.fuzzy.FuzzyText(prefix=prefix, length=12, suffix=suffix)
-    # services = dict
+    numero_posti_letto = factory.fuzzy.FuzzyInteger(1,6)
 
     class Meta:
         model = Camera
 
 
-STATI = ["PR", "SC", "CA", "PG"]
+class ServizioCameraFactory(DjangoModelFactory):
 
+    camera = factory.SubFactory(CameraFactory)
+    servizio = factory.SubFactory(ServizioFactory)
+    incluso = factory.fuzzy.FuzzyChoice(choices=[True, False])
+    costo = factory.LazyAttribute(lambda obj: 5.75 if not obj.incluso else 0.0)
+
+    class Meta:
+        model = ServizioCamera
+
+
+STATI = ["PR", "PG", "CA"]
 
 class PrenotazioneFactory(DjangoModelFactory):
     visitatore = factory.SubFactory(VisitatoreFactory)
     camera = factory.SubFactory(CameraFactory)
-    data_prenotazione = factory.fuzzy.FuzzyDate(date(2024, 1, 1), date(2024, 12, 31))
+    data_prenotazione = factory.fuzzy.FuzzyDate(start_date=date.today() - timedelta(days=30),
+                                             end_date=date.today())
     stato_prenotazione = factory.Iterator(STATI)
     richiesta = factory.Faker('name')
+    costo_soggiorno = factory.fuzzy.FuzzyDecimal(10.0,100.00,2)
+    data_pagamento = factory.fuzzy.FuzzyDate(start_date=date.today() - timedelta(days=30),
+                                             end_date=date.today())
+    numero_persone = factory.fuzzy.FuzzyInteger(1,6)
 
     class Meta:
         model = Prenotazione
@@ -112,8 +135,10 @@ class PrenotazioneFactory(DjangoModelFactory):
 
 class CalendarioPrenotazioneFactory(DjangoModelFactory):
     prenotazione = factory.SubFactory(PrenotazioneFactory)
-    data_inizio = factory.fuzzy.FuzzyDate(date(2025, 1, 1), date(2025, 12, 31))
-    data_fine = factory.fuzzy.FuzzyDate(date(2025, 1, 1), date(2025, 12, 31))
+    data_inizio = factory.fuzzy.FuzzyDate(start_date=date.today() - timedelta(days=30),
+                                             end_date=date.today() + timedelta(days=365))
+    data_fine = factory.fuzzy.FuzzyDate(start_date=date.today() - timedelta(days=30),
+                                             end_date=date.today() + timedelta(days=365))
 
     class Meta:
         model = CalendarioPrenotazione

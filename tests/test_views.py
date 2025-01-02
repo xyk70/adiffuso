@@ -125,12 +125,14 @@ def test_prenotazione_passata(app: "DjangoTestApp", user):
     response.form["richiesta"] = "bla bla"
     response.form["data_inizio"] = date(2024,1,1)
     response.form["data_fine"] = date(2026,1,2)
+    response.form["numero_persone"] = 1
     response = response.form.submit()
     assert 'La data inizio deve essere futura' in response.content.decode()
 
     response.form["richiesta"] = "bla bla"
     response.form["data_inizio"] = date.today() + timedelta(days=10)
     response.form["data_fine"] = date(2024,1,2)
+    response.form["numero_persone"] = 1
     response = response.form.submit()
     assert 'La data fine non può essere antecedente o uguale alla data inizio' in response.content.decode()
 
@@ -159,6 +161,7 @@ def test_prenotazione_negata(app: "DjangoTestApp", user):
     response.form["richiesta"] = "bla bla"
     response.form["data_inizio"] = date.today() + timedelta(days=10)
     response.form["data_fine"] = date.today() + timedelta(days=11)
+    response.form["numero_persone"] = 1
     response = response.form.submit()
     assert "Spiacenti: la camera è stata già prenotata" in response.content.decode()
 
@@ -185,6 +188,7 @@ def test_prenotazione_sovrapposta(app: "DjangoTestApp", user):
     response.form["richiesta"] = "bla bla"
     response.form["data_inizio"] = date.today() + timedelta(days=12)
     response.form["data_fine"] = date.today() + timedelta(days=13)
+    response.form["numero_persone"] = 1
     response = response.form.submit()
     assert "Spiacenti: le date si sovrappongono ad un" in response.content.decode()
 
@@ -200,7 +204,7 @@ def test_prenotazione_avvenuta(app: "DjangoTestApp", user):
     assert 'Stai prenotando la camera' in response.content.decode()
 
     response.form["richiesta"] = "bla bla"
-    response.form["numero_persone"] = 3
+    response.form["numero_persone"] = 1
     response.form["data_inizio"] = date.today() + timedelta(days=10)
     response.form["data_fine"] = date.today() + timedelta(days=14)
     response.form["costo_soggiorno"] = 100
@@ -236,6 +240,7 @@ def test_prenotazione_modifica(app: "DjangoTestApp", user):
     response.form["richiesta"] = "avevo dimenticato di chiedere ..."
     response.form["data_inizio"] = date.today() + timedelta(days=30)
     response.form["data_fine"] = date.today() + timedelta(days=33)
+    response.form["numero_persone"] = 1
     response = response.form.submit()
     assert response.status_code == 302
     p = Prenotazione.objects.get(visitatore__utente=user)
