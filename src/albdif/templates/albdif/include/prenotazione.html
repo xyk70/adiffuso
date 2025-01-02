@@ -1,0 +1,38 @@
+<div class="mb-3">
+    <label for="id_data_inizio" class="form-label" style="display:block;">Data Inizio</label>
+    {{ calendario_form.data_inizio }}
+    <div id="dataInizioHelp" class="form-text">Inizio del soggiorno</div>
+</div>
+<div class="mb-3">
+    <label for="id_data_fine" class="form-label" style="display:block;">Data Fine</label>
+    {{ calendario_form.data_fine }}
+    <div id="dataFineHelp" class="form-text">Data della partenza (entro le 10:00)</div>
+</div>
+<div class="mb-3">
+    <label for="id_numero_persone" class="form-label" style="display:block;">N° Persone</label>
+    {{ prenotazione_form.numero_persone }}
+    <div id="numPersoneHelp" class="form-text">Indicare il numero di ospiti</div>
+</div>
+<div class="mb-3">
+    <label for="id_richiesta" class="form-label" style="display:block;">Richieste aggiuntive</label>
+    {{ prenotazione_form.richiesta }}
+    <div id="richiestaHelp" class="form-text">Specificare eventuali necessità</div>
+</div>
+<div class="mb-3">
+    {{ prenotazione_form.costo_soggiorno }}
+</div>
+
+<div class="mb-3 text-danger">
+    {{ prenotazione_form.non_field_errors }}
+    {{ calendario_form.non_field_errors }}
+    {% for field in prenotazione_form %}
+        {% for error in field.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    {% endfor %}
+    {% for field in calendario_form %}
+        {% for error in field.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    {% endfor %}
+</div>

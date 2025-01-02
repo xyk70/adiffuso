@@ -20,10 +20,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = ([
-#                  path("", include("albdif.urls")),
-                  path("albdif/", include("albdif.urls")),
+                  path("", include("albdif.urls")),
                   path('admin/', admin.site.urls),
-                  path("accounts/", include("django.contrib.auth.urls")),
+                  #path("accounts/", include("django.contrib.auth.urls")),
+                  path("social/", include('social_django.urls', namespace='social')),
 ])
 
 if settings.DEBUG:

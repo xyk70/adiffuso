@@ -1,14 +1,81 @@
 {% extends "base.html" %}
+{% block head %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+{% endblock head %}
+
+{% block header %}
+    {% load static %}
+{% endblock header %}
 
 {% block content %}
 <h3 class="titolopagina">Stai prenotando la camera {{ camera }}</h3>
 <hr>
-
-<form action="{% url 'albdif:prenota_camera' user.pk camera.pk %}" method="post">
+<form id="prenotazioneForm" action="{% url 'albdif:prenota_camera' user.pk camera.pk %}" method="post">
     {% csrf_token %}
-    {{ prenotazione_form }}
-    {{ calendario_form }}
-    <button type="submit">Conferma Prenotazione</button>
+
+    <div class="container-md">
+        <div class="row">
+            <div id="form_prenot" class="col">
+                {% include 'albdif/include/prenotazione.html' %}
+            </div>
+
+            <div id="catalogo_prezzi" class="col">
+                <h4> Riferimento prezzi </h4>
+                <div class="row align-items-center bg-secondary p-3 border">
+                    <div class="col">
+                      Da
+                    </div>
+                    <div class="col">
+                      a
+                    </div>
+                    <div class="col">
+                      Prezzo
+                    </div>
+                </div>
+                {% for s in stagioni %}
+                <div class="row align-items-center bg-light p-3 border" data-inizio="{{ s.data_inizio|date:"Y-m-d" }}" data-fine="{{ s.data_fine|date:"Y-m-d" }}">
+                    <div class="col">
+                      {{ s.data_inizio }}
+                    </div>
+                    <div class="col">
+                      {{ s.data_fine }}
+                    </div>
+                    <div class="col">
+                      {{ s.prezzo_deafult }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="button" class="btn btn-success" onclick="validateAndCalculate()">Conferma Prenotazione</button>
+    </div>
 </form>
 
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Conferma inserimento nuova Prenotazione</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Sei sicuro di voler procedere alla prenotazione?
+                <div id="prezzoTotale"></div>
+                <div id="errorMessage" class="text-danger"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                <button type="button" class="btn btn-primary" id="confirmButton" onclick="document.getElementById('prenotazioneForm').submit();">Conferma</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock content %}
+
+{% block footer %}
+    <script type="text/javascript" src="{% static 'js/evidenzia_calendario.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/valida_prenotazione.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/calcola_prezzo_prenotazione.js' %}"></script>
+{% endblock footer %}

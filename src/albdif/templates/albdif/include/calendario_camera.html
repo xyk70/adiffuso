@@ -1,5 +1,10 @@
 {% block head %}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap Datepicker CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap Datepicker JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 {% endblock head %}
 
 {% block content %}
@@ -14,21 +19,10 @@
         $('#datepicker').datepicker({
             format: 'yyyy-mm-dd',
             startDate: '-0d',
-            autoclose: false,
+            autoclose: true,
             todayHighlight: true,
             datesDisabled: disabledDates,
             multidate: true,
         });
-
-<!--        .datepicker('setDate', new Date());-->
-<!--        $('#datepicker_next').datepicker({-->
-<!--            format: 'yyyy-mm-dd',-->
-<!--            startDate: '-1m',-->
-<!--            autoclose: false,-->
-<!--            todayHighlight: false,-->
-<!--            datesDisabled: disabledDates,-->
-<!--            multidate: true,-->
-<!--        }).datepicker('setDate', new Date(new Date().setMonth(new Date().getMonth() + 1)));-->
     });
 </script>
-

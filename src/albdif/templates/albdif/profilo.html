@@ -3,16 +3,18 @@
 {% block content %}
 <h2 class="titolopagina"> Profilo dell'utente: {{ user.first_name }} {{ user.last_name }}</h2>
 
-<hr>
-
 {% if user.is_authenticated %}
-    <form action="/albdif/profilo/" method="POST">
+    <form action="/albdif/profilo/" method="POST" class="d-inline">
         {% csrf_token %}
         {{ form.non_field_errors }}
         <table class="visitatore">
             {{ form }}
         </table>
-        <input type="submit" class="button primary" name="save" value="Salva">
+        <input type="submit" class="btn btn-success" name="save" value="Salva">
+    </form>
+    <form action="{% url 'albdif:logout' %}" method="POST" class="d-inline float-end">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="Logout">
     </form>
     <hr>
 
@@ -23,10 +25,5 @@
 {% endif %}
 
 <hr>
-
-<form action="{% url 'albdif:logout' %}" method="POST" style="display:inline;">
-    {% csrf_token %}
-    <input type="submit" class="button secondary" value="Logout">
-</form>
 
 {% endblock content %}
