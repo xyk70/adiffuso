@@ -1,8 +1,6 @@
-# Benvenuti nel progetto PW14A
+# Benvenuti, in questa pagina trovate le informazioni per scaricare ed eseguire il progetto 
 
-Titolo: **Albergo Diffuso Pegasus**
-
-Autore: fabio meoli
+**Albergo Diffuso Pegasus**
 
 ---
 ### Prerequisiti per l'avvio del progetto in locale (SO Windows)
