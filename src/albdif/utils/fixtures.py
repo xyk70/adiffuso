@@ -14,6 +14,14 @@ from albdif.models import Visitatore, Host, Proprieta, Camera, Prenotazione, Cal
     Servizio, ServizioCamera
 
 
+prefix = ("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et "
+          "dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ")
+
+suffix = ("Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu "
+          "fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
+          "mollit anim id est laborum.")
+
+
 class UserFactory(DjangoModelFactory):
     username = factory.Sequence(lambda n: f"test-{n}")
     first_name = factory.Faker('first_name')
@@ -71,19 +79,11 @@ class ProprietaPrincFactory(DjangoModelFactory):
 
 class ProprietaFactory(DjangoModelFactory):
     host = factory.SubFactory(HostFactory)
-    descrizione = factory.Faker('name')
+    descrizione = factory.fuzzy.FuzzyText(prefix=prefix, length=12, suffix=suffix)
     principale = False  # solo uno a True, gli altri a False
 
     class Meta:
         model = Proprieta
-
-
-prefix = ("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et "
-          "dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ")
-
-suffix = ("Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu "
-          "fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
-          "mollit anim id est laborum.")
 
 
 class ServizioFactory(DjangoModelFactory):

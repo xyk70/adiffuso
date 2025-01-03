@@ -42,7 +42,7 @@ class Proprieta(models.Model):
     l'albergo diffuso di proprietà di un host necessario per collezionare le camere da affittare
     """
     host = models.ForeignKey(Host, on_delete=models.CASCADE)
-    descrizione = models.CharField(max_length=200)
+    descrizione = models.CharField(max_length=2000)
     principale = models.BooleanField(default=False, help_text="Indica se è l'AD principale")
 
     class Meta():
@@ -50,7 +50,7 @@ class Proprieta(models.Model):
         verbose_name_plural = "Proprietà"
 
     def __str__(self):
-        return f"{self.descrizione}"
+        return f"{self.descrizione[:20]}"
     
     def clean(self):
         if self.principale and Proprieta.objects.filter(principale=True).exclude(id=self.id).exists():

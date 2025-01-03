@@ -44,6 +44,17 @@ h1, h2, h3, h4, h5 {
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9);
 }
 
+.descrizione_partner {
+    font-size: 16px;
+    color: #333;
+    margin: 2px;
+    padding: 10px;
+    border: 1px solid #462a2a;
+    background-color: rgba(198, 243, 164, 0.6);
+    text-align: justify;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9);
+}
+
 .descrizione {
     font-size: 16px;
     color: #333;
