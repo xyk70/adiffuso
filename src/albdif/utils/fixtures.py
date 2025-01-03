@@ -12,8 +12,7 @@ from factory.django import DjangoModelFactory
 
 from albdif.config import env
 from albdif.models import Visitatore, Host, Proprieta, Camera, Prenotazione, CalendarioPrenotazione, Foto, Stagione, \
-    Servizio, ServizioCamera
-
+    Servizio, ServizioCamera, PrezzoCamera
 
 prefix = ("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et "
           "dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ")
@@ -180,3 +179,12 @@ class FotoFactory(DjangoModelFactory):
             raise RuntimeError(f"La directory '{directory}' non esiste.")
         except Exception as e:
             raise RuntimeError(f"Errore durante il caricamento dei file dalla directory '{directory}': {e}")
+
+class PrezzoCameraFactory(DjangoModelFactory):
+
+    camera = factory.SubFactory(CameraFactory)
+    stagione = factory.SubFactory(StagioneFactory)
+    prezzo = factory.fuzzy.FuzzyDecimal(10.00, 200.00, 2)
+
+    class Meta:
+        model = PrezzoCamera
