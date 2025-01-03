@@ -10,7 +10,7 @@ class Visitatore(models.Model):
     persona che effettua la registrazione al sito per effettuare la prenotazione
     """
     registrazione = models.DateTimeField("data registrazione")
-    utente = models.ForeignKey(User, unique=True, on_delete=models.CASCADE)
+    utente = models.OneToOneField(User, on_delete=models.CASCADE)
 
     class Meta():
         verbose_name = "Visitatore"
@@ -26,11 +26,11 @@ class Host(models.Model):
     persona o azienda che effettua la registrazione per accedere ai servizi hosting dell'AD
     """
     registrazione = models.DateTimeField("data registrazione")
-    utente = models.ForeignKey(User, unique=True, on_delete=models.CASCADE)
+    utente = models.OneToOneField(User, on_delete=models.CASCADE)
 
     class Meta():
         verbose_name = "Host"
-        verbose_name_plural = "Host"
+        verbose_name_plural = "Hosts"
 
     def __str__(self):
         return f"{self.utente.last_name} {self.utente.first_name}"
@@ -42,7 +42,7 @@ class Proprieta(models.Model):
     l'albergo diffuso di proprietà di un host necessario per collezionare le camere da affittare
     """
     host = models.ForeignKey(Host, on_delete=models.CASCADE)
-    descrizione = models.CharField(max_length=200)
+    descrizione = models.CharField(max_length=2000)
     principale = models.BooleanField(default=False, help_text="Indica se è l'AD principale")
 
     class Meta():
@@ -50,7 +50,7 @@ class Proprieta(models.Model):
         verbose_name_plural = "Proprietà"
 
     def __str__(self):
-        return f"{self.descrizione}"
+        return f"{self.descrizione[:20]}"
     
     def clean(self):
         if self.principale and Proprieta.objects.filter(principale=True).exclude(id=self.id).exists():
@@ -61,6 +61,21 @@ class Proprieta(models.Model):
         super(Proprieta, self).save(*args, **kwargs)
         
 
+class Servizio(models.Model):
+    """
+    Servizio:
+    definisce i servizi che possono essere forniti (differenti per ogni camera)
+    """
+    descrizione_servizio = models.CharField(max_length=30)
+
+    def __str__(self):
+        return f"{self.descrizione_servizio}"
+
+    class Meta():
+        verbose_name = "Servizio"
+        verbose_name_plural = "Servizi"
+
+
 class Camera(models.Model):
     """
     Camera:
@@ -70,13 +85,6 @@ class Camera(models.Model):
     nome = models.CharField(max_length=100, default="... inserire un nickname")
     descrizione = models.CharField(max_length=1000)
     numero_posti_letto = models.IntegerField(null=True, blank=True, default=2)
-    services = models.JSONField(default={
-            "toilette": True,
-            "wifi": True,
-            "tv": True,
-            "aria condizionata": True,
-            "minibar": False
-        }, help_text="Servizi offerti nella camera, ad esempio: toilette, wifi, phon, etc.")
 
     class Meta():
         verbose_name = "Camera"
@@ -98,8 +106,36 @@ class Camera(models.Model):
             prezzo_camera = PrezzoCamera.objects.filter(camera=self, stagione=stagione_bassa).order_by('prezzo').first()
             if prezzo_camera:
                 return prezzo_camera.prezzo
-            return stagione_bassa.prezzo_deafult
+            return stagione_bassa.prezzo_default
         return None
+
+
+class ServizioCamera(models.Model):
+    """
+    ServizioCamera
+    elenca tutti i servizi di una camera specificando se sono inclusi nel prezzo (incluso=True)
+    o opzionali (incluso=False), in questo caso sarà visibile il prezzo
+    """
+    camera = models.ForeignKey(Camera, on_delete=models.CASCADE)
+    servizio = models.ForeignKey(Servizio, on_delete=models.CASCADE)
+    incluso = models.BooleanField(default=False)
+    costo = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+
+    class Meta():
+        verbose_name = "Servizio camera"
+        verbose_name_plural = "Servizi camera"
+
+    def __str__(self):
+        return f"{self.servizio}"
+
+    def clean(self):
+        if not self.incluso and (not self.costo or self.costo == 0):
+            raise ValidationError("Se il servizio è opzionale va indicato il costo")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super(ServizioCamera, self).save(*args, **kwargs)
+
 
 class Foto(models.Model):
     """
@@ -162,7 +198,7 @@ class CalendarioPrenotazione(models.Model):
     """
     prenotazione = models.ForeignKey(Prenotazione, on_delete=models.CASCADE)
     data_inizio = models.DateField(help_text="Data inizio soggiorno")
-    data_fine = models.DateField()
+    data_fine = models.DateField(help_text="Data fine soggiorno")
 
     class Meta():
         verbose_name = "Calendario della prenotazione"
@@ -180,7 +216,7 @@ class Stagione(models.Model):
     stagione = models.CharField(max_length=50)
     data_inizio = models.DateField()
     data_fine = models.DateField()
-    prezzo_deafult = models.DecimalField(max_digits=7, decimal_places=2, default=50)
+    prezzo_default = models.DecimalField(max_digits=7, decimal_places=2, default=50)
 
     class Meta():
         verbose_name = "Stagione"
