@@ -10,6 +10,7 @@ from django.core.files.base import ContentFile
 import factory.fuzzy
 from factory.django import DjangoModelFactory
 
+from albdif.config import env
 from albdif.models import Visitatore, Host, Proprieta, Camera, Prenotazione, CalendarioPrenotazione, Foto, Stagione, \
     Servizio, ServizioCamera
 
@@ -156,7 +157,7 @@ class FotoFactory(DjangoModelFactory):
     def _get_random_file():
         """Ritorna un'immagine da una lista di immagini non coperte da copyright e presenti su static/img
         """
-        directory = 'static/img'
+        directory = os.path.join(env("STATIC_ROOT"), 'img')
         try:
             valid_files = [
                 f for f in os.listdir(directory)

@@ -13,6 +13,7 @@ services:
       - DJANGO_SETTINGS_MODULE=albdif.config.settings
       - PEGASUS_MEDIA_ROOT=${PEGASUS_MEDIA_ROOT}
       - PEGASUS_MEDIA_URL=${PEGASUS_MEDIA_URL}
+      - PEGASUS_STATIC_ROOT=${PEGASUS_STATIC_ROOT}
       - PEGASUS_DATABASE_URL=${PEGASUS_DATABASE_URL}
       - PEGASUS_SOCIAL_AUTH_REDIRECT_IS_HTTPS=${PEGASUS_SOCIAL_AUTH_REDIRECT_IS_HTTPS}
       - PEGASUS_SOCIAL_AUTH_GITHUB_KEY=${PEGASUS_SOCIAL_AUTH_GITHUB_KEY}
@@ -20,6 +21,7 @@ services:
       - PEGASUS_SOCIAL_AUTH_GITHUB_REDIRECT_URI=${PEGASUS_SOCIAL_AUTH_GITHUB_REDIRECT_URI}
     command: >
        sh -c "python src/manage.py migrate && 
+              python src/manage.py crea_dati_test &&
               python src/manage.py runserver 0.0.0.0:8000"
 
 #volumes:
