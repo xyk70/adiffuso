@@ -2,6 +2,8 @@
 
 Titolo: **Albergo Diffuso Pegasus**
 
+Autore: fabio meoli
+
 ---
 ### Prerequisiti per l'avvio del progetto in locale (SO Windows)
 1. installazione di python versione 3.12 (https://www.python.org/downloads/windows/)  

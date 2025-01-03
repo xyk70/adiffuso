@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import CharField, Q
@@ -174,6 +176,12 @@ class Prenotazione(models.Model):
         (CANCELLATA, "Cancellata"),
     ]
 
+    PASSAGGI_STATO = [
+        (PRENOTATA, PRENOTATA),
+        (PRENOTATA, PAGATA),
+        (PRENOTATA, CANCELLATA),
+    ]
+
     visitatore = models.ForeignKey(Visitatore, on_delete=models.CASCADE)
     camera = models.ForeignKey(Camera, on_delete=models.CASCADE)
     data_prenotazione = models.DateTimeField()
@@ -182,6 +190,7 @@ class Prenotazione(models.Model):
     costo_soggiorno = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     data_pagamento = models.DateTimeField(null=True, blank=True)
     numero_persone = models.IntegerField(null=True, blank=True, default=1)
+    version = models.DateTimeField(default=datetime.datetime.now())
 
     class Meta():
         verbose_name = "Prenotazione"
@@ -189,6 +198,19 @@ class Prenotazione(models.Model):
 
     def __str__(self):
         return f"{self.id} {self.visitatore} {self.camera} {self.stato_prenotazione}"
+
+    def is_valid_state_transition(self, old_state, new_state):
+        return (old_state, new_state) in self.PASSAGGI_STATO
+
+    def clean(self):
+        if self.pk:
+            old_state = Prenotazione.objects.get(pk=self.pk).stato_prenotazione
+            if not self.is_valid_state_transition(old_state, self.stato_prenotazione):
+                raise ValidationError(f"Passaggio di stato non consentito da {old_state} a {self.stato_prenotazione}")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super(Prenotazione, self).save(*args, **kwargs)
 
 
 class CalendarioPrenotazione(models.Model):
@@ -206,6 +228,25 @@ class CalendarioPrenotazione(models.Model):
 
     def __str__(self):
         return f"{self.prenotazione} {self.data_inizio} {self.data_fine}"
+
+    def altra_prenotazione_presente(self, data_inizio, data_fine, prenotazione):
+        cp = CalendarioPrenotazione.objects.filter(
+            Q(data_inizio__lte=data_fine),
+            Q(data_fine__gt=data_inizio),
+            Q(prenotazione__camera__pk=prenotazione.camera.pk),
+            ~Q(prenotazione__id=prenotazione.id)
+        )
+        return cp.exists()
+
+    def clean(self):
+        if self.pk:
+            prenotazione = Prenotazione.objects.get(pk=self.prenotazione.pk)
+            if self.altra_prenotazione_presente(self.data_inizio, self.data_fine, prenotazione):
+                raise ValidationError(f"Trovata altra prenotazione nello stesso periodo")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super(CalendarioPrenotazione, self).save(*args, **kwargs)
 
 
 class Stagione(models.Model):

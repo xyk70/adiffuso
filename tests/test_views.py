@@ -163,7 +163,8 @@ def test_prenotazione_negata(app: "DjangoTestApp", user):
     response.form["data_fine"] = date.today() + timedelta(days=11)
     response.form["numero_persone"] = 1
     response = response.form.submit()
-    assert "Spiacenti: la camera è stata già prenotata" in response.content.decode()
+    assert ("Trovata altra prenotazione nello stesso periodo" in response.content.decode()
+            or "Spiacenti, la camera è stata già prenotata!" in response.content.decode())
 
 def test_prenotazione_sovrapposta(app: "DjangoTestApp", user):
     pr1 = ProprietaFactory()

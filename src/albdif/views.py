@@ -12,6 +12,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.views import generic
 from django.contrib.auth import logout as auth_logout
+from django.db import transaction
+from django.db.models import F, Q
 
 from .forms import LoginForm, PrenotazioneForm, CalendarioPrenotazioneForm, PagamentoForm
 from .utils.utility import date_range, calcola_prezzo_totale
@@ -182,9 +184,16 @@ class prenota_camera(generic.DetailView):
             'stagioni': stagioni
         })
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         visitatore = Visitatore.objects.get(utente__id=self.kwargs["id1"])
         camera = get_object_or_404(Camera, id=self.kwargs["id2"])
+
+        # TODO su sqlite non è possibile testare questa situazione per il lock è acquisito sull'intero database
+        # Acquisisco un lock esclusivo sulla tabella CalendarioPrenotazione per non consentire
+        # la prenotazione contemporanea da due o più utenti
+        CalendarioPrenotazione.objects.select_for_update().filter(prenotazione__camera__id=camera.id)
+
         prenotazione_form = PrenotazioneForm(request.POST)
         prenotazione_form.instance.visitatore = visitatore
         prenotazione_form.instance.camera = camera
@@ -259,8 +268,15 @@ class prenota_modifica(generic.DetailView):
             'stagioni': stagioni
         })
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         prenotazione = get_object_or_404(Prenotazione, id=self.kwargs["id1"])
+
+        # TODO su sqlite non è possibile testare questa situazione per il lock è acquisito sull'intero database
+        # Acquisisco un lock esclusivo sulla tabella CalendarioPrenotazione per non consentire
+        # la prenotazione contemporanea da due o più utenti
+        CalendarioPrenotazione.objects.select_for_update().filter(prenotazione__camera__id=prenotazione.camera.id)
+
         calendario = get_object_or_404(CalendarioPrenotazione, prenotazione__id=prenotazione.id)
         visitatore = get_object_or_404(Visitatore, id=prenotazione.visitatore.id)
         camera = get_object_or_404(Camera, id=prenotazione.camera.id)

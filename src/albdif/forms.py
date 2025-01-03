@@ -74,10 +74,10 @@ class CalendarioPrenotazioneForm(forms.ModelForm):
             raise ValidationError("La data inizio deve essere futura")
         gia_prenotata = CalendarioPrenotazione.objects.filter(
             Q(prenotazione__camera=self.instance.prenotazione.camera),
-            Q(data_fine__gte=di), Q(data_inizio__lte=df),
+            Q(data_fine__gt=di), Q(data_inizio__lte=df),
             ~Q(prenotazione__visitatore=self.instance.prenotazione.visitatore)).count()
         if gia_prenotata > 0:
-            raise ValidationError("Spiacenti: la camera è stata già prenotata")
+            raise ValidationError("Spiacenti, la camera è stata già prenotata!")
         gia_prenotata = CalendarioPrenotazione.objects.filter(
             Q(prenotazione__camera=self.instance.prenotazione.camera),
             Q(data_fine__gte=di), Q(data_inizio__lte=df),
