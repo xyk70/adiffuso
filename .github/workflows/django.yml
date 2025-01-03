@@ -22,11 +22,15 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install --no-cache-dir -r requirements-test.txt
-#        pdm install
+        pip install uv
+    - name: Creazione del virtualenv
+      run: |
+        uv sync
     - name: Run Tests
       env:
         PYTHONPATH: ./src
+        PEGASUS_STATIC_ROOT: ./static
         DJANGO_SETTINGS_MODULE: albdif.config.settings
       run: |
+        source .venv/bin/activate
         pytest tests
